@@ -1,1 +1,212 @@
-reset-password
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reset Password</title>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --primary: #111;
+      --accent: #2563eb;
+      --error: #dc2626;
+      --success: #16a34a;
+      --bg: #f9fafb;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 16px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: var(--primary);
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #111;
+      margin-top: 10px;
+    }
+
+    .message {
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .error { color: var(--error); }
+    .success { color: var(--success); }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Reset your password</h1>
+  <p>Enter a new password below.</p>
+
+  <div id="message" class="message"></div>
+
+  <form id="form">
+    <input id="password" type="password" placeholder="New password" required />
+    <input id="confirm" type="password" placeholder="Confirm password" required />
+    <button type="submit">Update password</button>
+  </form>
+
+  <div id="successActions" class="hidden">
+    <button onclick="openApp()">Open AmaliticZ App</button>
+    <button class="secondary" onclick="goToLogin()">Back to Sign In</button>
+  </div>
+</div>
+
+<script>
+  // --- CONFIG ---
+  const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+  const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY";
+
+  const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  const msg = document.getElementById("message");
+  const form = document.getElementById("form");
+  const successActions = document.getElementById("successActions");
+
+  function showMessage(text, type) {
+    msg.textContent = text;
+    msg.className = "message " + type;
+  }
+
+  // --- Extract tokens from URL hash ---
+  function getTokensFromHash() {
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    return {
+      access_token: params.get("access_token"),
+      refresh_token: params.get("refresh_token"),
+      type: params.get("type")
+    };
+  }
+
+  // --- Initialize session ---
+  async function init() {
+    const { access_token, refresh_token, type } = getTokensFromHash();
+
+    if (!access_token || type !== "recovery") {
+      showMessage("This reset link is invalid or has expired.", "error");
+      form.classList.add("hidden");
+      return;
+    }
+
+    const { error } = await supabase.auth.setSession({
+      access_token,
+      refresh_token
+    });
+
+    if (error) {
+      showMessage("This reset link is invalid or has expired.", "error");
+      form.classList.add("hidden");
+    }
+  }
+
+  init();
+
+  // --- Form submit ---
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm").value;
+
+    if (password.length < 8) {
+      showMessage("Password must be at least 8 characters.", "error");
+      return;
+    }
+
+    if (password !== confirm) {
+      showMessage("Passwords do not match.", "error");
+      return;
+    }
+
+    showMessage("Updating password...", "");
+
+    const { error } = await supabase.auth.updateUser({ password });
+
+    if (error) {
+      showMessage(error.message, "error");
+      return;
+    }
+
+    showMessage("Your password has been updated successfully.", "success");
+    form.classList.add("hidden");
+    successActions.classList.remove("hidden");
+  });
+
+  // --- Deep link handling ---
+  function openApp() {
+    const scheme = "amaliticz://";
+
+    // Attempt deep link
+    window.location.href = scheme;
+
+    // Fallback (if app not installed)
+    setTimeout(() => {
+      // Optional: redirect to App Store / Play Store
+      window.location.href = "https://www.amaliticz.com";
+    }, 1500);
+  }
+
+  function goToLogin() {
+    window.location.href = "https://www.amaliticz.com/login";
+  }
+</script>
+
+</body>
+</html>
