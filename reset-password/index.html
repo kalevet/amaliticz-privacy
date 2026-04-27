@@ -414,12 +414,12 @@
 
 <script>
 // ─────────────────────────────────────────────────────────────
-//  CONFIGURATION  ← update these two values
+//  CONFIGURATION  ← fill in your values here
 // ─────────────────────────────────────────────────────────────
-const SUPABASE_URL     = 'https://YOUR_PROJECT_ID.supabase.co';
+const SUPABASE_URL      = 'https://YOUR_PROJECT_ID.supabase.co';
 const SUPABASE_ANON_KEY = 'YOUR_ANON_PUBLIC_KEY';
-const APP_SCHEME       = 'amaliticz://';           // iOS deep link
-const IOS_STORE_URL    = 'https://apps.apple.com/app/idXXXXXXXXXX';
+const APP_SCHEME        = 'amaliticz://';
+const IOS_STORE_URL     = 'https://apps.apple.com/app/idXXXXXXXXXX';
 // ─────────────────────────────────────────────────────────────
 
 // Initialise Supabase client (v2 from CDN)
@@ -447,45 +447,60 @@ function showView(id) {
   document.getElementById(id).classList.add('active');
 }
 
-// ── Parse hash fragment (#access_token=...&type=recovery) ────
-function parseHash() {
-  const hash = window.location.hash.slice(1); // remove leading '#'
-  const params = {};
+// ── On page load: detect PKCE ?code= or legacy #hash flow ────
+async function init() {
+
+  // ── PKCE flow (Supabase default since ~mid-2023) ──
+  // The reset email delivers: ?code=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+
+  if (code) {
+    // Exchange the one-time code for a live session
+    const { error } = await sb.auth.exchangeCodeForSession(code);
+
+    // Clean the code out of the URL bar immediately — it's single-use
+    history.replaceState(null, '', window.location.pathname);
+
+    if (error) {
+      // Code already used, expired, or invalid
+      showView('view-invalid');
+      return;
+    }
+
+    showView('view-form');
+    return;
+  }
+
+  // ── Legacy implicit/hash flow fallback ──
+  // Older Supabase projects deliver: #access_token=...&type=recovery
+  const hash = window.location.hash.slice(1);
+  const hashParams = {};
   hash.split('&').forEach(pair => {
     const [k, v] = pair.split('=');
-    if (k) params[decodeURIComponent(k)] = decodeURIComponent(v || '');
+    if (k) hashParams[decodeURIComponent(k)] = decodeURIComponent(v || '');
   });
-  return params;
-}
 
-// ── On page load: validate the reset link ────────────────────
-async function init() {
-  const params = parseHash();
+  if (hashParams.access_token && hashParams.refresh_token && hashParams.type === 'recovery') {
+    const { error } = await sb.auth.setSession({
+      access_token:  hashParams.access_token,
+      refresh_token: hashParams.refresh_token,
+    });
 
-  // Supabase puts type=recovery for password reset links
-  if (!params.access_token || !params.refresh_token || params.type !== 'recovery') {
-    showView('view-invalid');
+    // Clean hash from URL bar
+    history.replaceState(null, '', window.location.pathname);
+
+    if (error) {
+      showView('view-invalid');
+      return;
+    }
+
+    showView('view-form');
     return;
   }
 
-  // Establish the session from the tokens in the URL
-  // This must be done before calling updateUser
-  const { error } = await sb.auth.setSession({
-    access_token:  params.access_token,
-    refresh_token: params.refresh_token,
-  });
-
-  if (error) {
-    // Token is expired or already used
-    showView('view-invalid');
-    return;
-  }
-
-  // Tokens are valid — show the form
-  showView('view-form');
-
-  // Clear hash from URL bar so tokens aren't visible or accidentally shared
-  history.replaceState(null, '', window.location.pathname);
+  // Neither flow matched — link is missing, expired, or already used
+  showView('view-invalid');
 }
 
 // ── Password strength scorer (0–4) ───────────────────────────
