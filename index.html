@@ -1,75 +1,654 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Privacy Policy – AmaliticZ</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AmaliticZ – Know Where Every Dollar Goes</title>
+  <meta name="description" content="AmaliticZ turns your Amazon spending into beautiful insights. See every category, every trend, every dollar — instantly.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #060608;
+      --surface:  #111115;
+      --border:   rgba(255,255,255,0.07);
+      --text:     #f0f0f2;
+      --muted:    #7a7a8a;
+      --orange:   #f4883a;
+      --blue:     #5ab4f5;
+      --teal:     #4ecdc4;
+      --mint:     #7ed8c0;
+      --pink:     #f48fb1;
+      --yellow:   #f4c542;
+      --magenta:  #c966cc;
+      --red:      #e8566a;
+      --sky:      #7ec8e3;
+      --coral:    #e87a5a;
+    }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: Arial, sans-serif;
-      line-height: 1.7;
-      margin: 2rem auto;
-      max-width: 800px;
-      padding: 0 1rem;
-      color: #333;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
-    h1, h2 {
-      color: #1a1a1a;
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 9999;
     }
-    h1 {
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(6,6,8,0.95), transparent);
+      backdrop-filter: blur(0px);
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo img {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+    }
+    .nav-logo span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+    .nav-cta {
+      background: var(--text);
+      color: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 20px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { opacity: 0.85; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ambient glow blobs */
+    .glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      opacity: 0.22;
+    }
+    .glow-1 { width: 600px; height: 600px; background: var(--orange); top: -200px; right: -100px; }
+    .glow-2 { width: 500px; height: 500px; background: var(--teal);   bottom: -150px; left: -100px; }
+    .glow-3 { width: 300px; height: 300px; background: var(--magenta); top: 30%; left: 20%; opacity: 0.1; }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--orange);
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fade-up 0.7s 0.1s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(64px, 14vw, 160px);
+      line-height: 0.92;
+      letter-spacing: 0.01em;
+      color: var(--text);
+      margin-bottom: 0;
+      opacity: 0;
+      animation: fade-up 0.8s 0.2s forwards;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-title .accent { color: var(--orange); }
+
+    .hero-sub {
+      font-size: clamp(16px, 2.5vw, 20px);
+      color: var(--muted);
+      max-width: 520px;
+      margin: 28px auto 0;
+      font-weight: 300;
+      opacity: 0;
+      animation: fade-up 0.7s 0.4s forwards;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-actions {
+      margin-top: 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      opacity: 0;
+      animation: fade-up 0.7s 0.55s forwards;
+      position: relative;
+      z-index: 1;
+    }
+
+    .app-store-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--text);
+      color: var(--bg);
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-weight: 500;
+      font-size: 15px;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .app-store-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+    .app-store-btn svg { flex-shrink: 0; }
+    .app-store-btn .btn-text { text-align: left; line-height: 1.2; }
+    .app-store-btn .btn-text small { display: block; font-size: 10px; font-weight: 300; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.08em; }
+    .app-store-btn .btn-text strong { font-size: 16px; font-weight: 600; }
+
+    .hero-note {
+      font-size: 12px;
+      color: var(--muted);
+      opacity: 0.6;
+    }
+
+    /* ── DONUT VISUAL ── */
+    .hero-donut {
+      margin-top: 70px;
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fade-up 0.9s 0.7s forwards;
+    }
+    .donut-container {
+      position: relative;
+      width: clamp(220px, 40vw, 320px);
+      height: clamp(220px, 40vw, 320px);
+      margin: 0 auto;
+    }
+    .donut-container svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .donut-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .donut-inner img {
+      width: clamp(60px, 12vw, 90px);
+      height: clamp(60px, 12vw, 90px);
+      border-radius: clamp(14px, 3vw, 22px);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    .seg {
+      stroke-dasharray: 0 1000;
+      animation: draw 1.4s 0.8s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    @keyframes draw { to { stroke-dasharray: var(--len) 1000; } }
+
+    /* floating labels around donut */
+    .donut-labels {
+      position: absolute;
+      inset: -40px;
+      pointer-events: none;
+    }
+    .dlabel {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      white-space: nowrap;
+      opacity: 0;
+      animation: fade 0.5s forwards;
+    }
+    .dlabel span { display: block; font-size: 13px; font-weight: 500; }
+
+    /* ── FEATURES ── */
+    .features {
+      padding: 100px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--orange);
+      margin-bottom: 16px;
       text-align: center;
     }
-    a {
-      color: #0073bb;
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 6vw, 72px);
+      text-align: center;
+      line-height: 1;
+      margin-bottom: 64px;
+      color: var(--text);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .feature-card:first-child { border-radius: 18px 0 0 0; }
+    .feature-card:nth-child(2) { border-radius: 0 18px 0 0; }
+    .feature-card:nth-child(3) { border-radius: 0 0 0 18px; }
+    .feature-card:last-child { border-radius: 0 0 18px 0; }
+    @media (max-width: 600px) {
+      .feature-card { border-radius: 0 !important; }
+      .feature-card:first-child { border-radius: 18px 18px 0 0 !important; }
+      .feature-card:last-child { border-radius: 0 0 18px 18px !important; }
+    }
+    .feature-card:hover { background: #18181f; }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s;
+    }
+    .feature-card:hover::before { transform: scaleX(1); }
+
+    .feature-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .feature-card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 0.03em;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .feature-card p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    /* ── COLOR BAR ── */
+    .color-bar {
+      height: 6px;
+      display: flex;
+      width: 100%;
+      overflow: hidden;
+    }
+    .color-bar span {
+      flex: 1;
+      animation: bar-grow 1.2s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes bar-grow {
+      from { transform: scaleX(0); }
+      to   { transform: scaleX(1); }
+    }
+
+    /* ── CATEGORIES ── */
+    .categories {
+      padding: 0 24px 100px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .cat-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 48px;
+    }
+    .cat-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: var(--muted);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .cat-pill:hover { border-color: var(--dot); color: var(--text); }
+    .cat-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--dot);
+      flex-shrink: 0;
+    }
+
+    /* ── CTA SECTION ── */
+    .cta-section {
+      padding: 100px 24px 120px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section .glow {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, var(--orange) 0%, var(--teal) 60%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.08;
+      filter: blur(80px);
+    }
+    .cta-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 10vw, 100px);
+      line-height: 0.95;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-title .line2 { color: var(--orange); }
+    .cta-sub {
+      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 40px 32px;
+    }
+    .footer-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .footer-logo img { width: 30px; height: 30px; border-radius: 8px; }
+    .footer-logo span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+    .footer-tagline { font-size: 13px; color: var(--muted); }
+    .footer-links { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+    footer a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+    footer a:hover { color: var(--text); }
+    .footer-divider { height: 1px; background: var(--border); margin-bottom: 24px; }
+    .footer-legal { display: flex; flex-direction: column; gap: 10px; }
+    .footer-legal p { font-size: 11px; color: var(--muted2); line-height: 1.6; max-width: 860px; }
+    .footer-copy { font-size: 11px; color: var(--muted2); margin-top: 6px; opacity: 0.7; }
+    @media (max-width: 600px) {
+      footer { padding: 32px 20px 24px; }
+      .footer-top { flex-direction: column; gap: 20px; }
+      .footer-links { gap: 16px; }
+    }
+
+    /* ── UTILS ── */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      .features, .categories { padding-left: 16px; padding-right: 16px; }
+      footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
-  <h1>Privacy Policy</h1>
-  <p><strong>Effective Date:</strong> 06/30/2025</p>
-  <p><strong>Last Updated:</strong> 06/30/2025</p>
 
-  <p><strong>AmaliticZ</strong> ("we", "our", or "us") respects your privacy. This Privacy Policy explains how we collect, use, and protect your information when you use our app.</p>
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <img src="https://raw.githubusercontent.com/kalevet/amaliticz-privacy/main/Amaliticz_Icon.png" alt="AmaliticZ">
+    <span>AmaliticZ</span>
+  </a>
+  <a class="nav-cta" href="https://apps.apple.com/app/idXXXXXXXXXX">Download Free</a>
+</nav>
 
-  <h2>1. Information We Collect</h2>
-  <ul>
-    <li>Amazon account data (e.g., name, email) via Login with Amazon</li>
-    <li>Amazon product data (ASINs, product metadata) via Amazon Product Advertising API</li>
-    <li>App usage analytics (e.g., feature usage, session times)</li>
-  </ul>
+<!-- HERO -->
+<section class="hero">
+  <div class="glow glow-1"></div>
+  <div class="glow glow-2"></div>
+  <div class="glow glow-3"></div>
 
-  <h2>2. How We Use Your Information</h2>
-  <p>We use your information to:</p>
-  <ul>
-    <li>Provide secure login and account access via Amazon</li>
-    <li>Personalize your shopping experience</li>
-    <li>Improve app performance and user support</li>
-  </ul>
+  <p class="hero-eyebrow">Amazon Spend Analytics</p>
 
-  <p>We do <strong>not</strong> sell or share your information with third-party advertisers.</p>
+  <h1 class="hero-title">
+    KNOW WHERE<br>
+    EVERY <span class="accent">DOLLAR</span><br>
+    GOES.
+  </h1>
 
-  <h2>3. Data Sharing</h2>
-  <p>We may share limited data:</p>
-  <ul>
-    <li>With Amazon for login and product data access</li>
-    <li>With service providers (e.g., hosting, analytics), under confidentiality agreements</li>
-  </ul>
+  <p class="hero-sub">
+    AmaliticZ transforms your Amazon order history into a stunning visual breakdown — by category, by time, by everything that matters.
+  </p>
 
-  <h2>4. Data Retention</h2>
-  <p>We retain user data only as long as necessary for the intended purpose and legal compliance.</p>
+  <div class="hero-actions">
+    <a class="app-store-btn" href="https://apps.apple.com/app/idXXXXXXXXXX">
+      <svg width="22" height="27" viewBox="0 0 22 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18.248 14.338c-.028-3.252 2.658-4.832 2.78-4.908-1.517-2.216-3.874-2.52-4.706-2.547-2-.207-3.916 1.19-4.93 1.19-1.013 0-2.574-1.164-4.232-1.132-2.165.033-4.17 1.273-5.284 3.218-2.259 3.92-.578 9.714 1.624 12.893 1.077 1.557 2.352 3.302 4.025 3.24 1.618-.066 2.226-1.047 4.183-1.047 1.957 0 2.514 1.047 4.228 1.012 1.74-.029 2.84-1.582 3.907-3.144a17.15 17.15 0 0 0 1.78-3.632c-4.164-1.592-3.37-6.144-3.375-6.143ZM15.02 4.99C15.927 3.895 16.546 2.41 16.375.895c-1.302.059-2.88.885-3.816 1.956-.836.949-1.576 2.484-1.378 3.942 1.453.113 2.934-.747 3.839-1.803Z" fill="currentColor"/>
+      </svg>
+      <div class="btn-text">
+        <small>Download on the</small>
+        <strong>App Store</strong>
+      </div>
+    </a>
+    <p class="hero-note">Free to download · iOS</p>
+  </div>
 
-  <h2>5. Your Rights</h2>
-  <p>You have the right to:</p>
-  <ul>
-    <li>Request data deletion</li>
-    <li>Withdraw login access (log out from Amazon)</li>
-    <li>Contact us with privacy-related inquiries</li>
-  </ul>
+  <!-- Donut visual -->
+  <div class="hero-donut">
+    <div class="donut-container">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#111115" stroke-width="13"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f4883a" stroke-width="13" stroke-dashoffset="0"    style="--len:44"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#7ec8e3" stroke-width="13" stroke-dashoffset="-46"  style="--len:32"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#e8566a" stroke-width="13" stroke-dashoffset="-80"  style="--len:23"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#7ed8c0" stroke-width="13" stroke-dashoffset="-105" style="--len:27"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#4ecdc4" stroke-width="13" stroke-dashoffset="-131" style="--len:21"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#5ab4f5" stroke-width="13" stroke-dashoffset="-154" style="--len:21"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#c966cc" stroke-width="13" stroke-dashoffset="-177" style="--len:17"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f4c542" stroke-width="13" stroke-dashoffset="-196" style="--len:13"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f48fb1" stroke-width="13" stroke-dashoffset="-211" style="--len:14"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#e87a5a" stroke-width="13" stroke-dashoffset="-227" style="--len:9"/>
+      </svg>
+      <div class="donut-inner">
+        <img src="https://raw.githubusercontent.com/kalevet/amaliticz-privacy/main/Amaliticz_Icon.png" alt="AmaliticZ">
+      </div>
+    </div>
+  </div>
+</section>
 
-  <h2>6. Changes to This Policy</h2>
-  <p>We may update this policy. Changes will be reflected on this page with a new "Last Updated" date.</p>
+<!-- COLOR BAR -->
+<div class="color-bar">
+  <span style="background:#f4883a; animation-delay:0.0s"></span>
+  <span style="background:#7ec8e3; animation-delay:0.1s"></span>
+  <span style="background:#e8566a; animation-delay:0.2s"></span>
+  <span style="background:#7ed8c0; animation-delay:0.3s"></span>
+  <span style="background:#4ecdc4; animation-delay:0.4s"></span>
+  <span style="background:#5ab4f5; animation-delay:0.5s"></span>
+  <span style="background:#c966cc; animation-delay:0.6s"></span>
+  <span style="background:#f4c542; animation-delay:0.7s"></span>
+  <span style="background:#f48fb1; animation-delay:0.8s"></span>
+  <span style="background:#e87a5a; animation-delay:0.9s"></span>
+</div>
 
-  <h2>7. Contact Us</h2>
-  <p>If you have questions or requests, email us at: <a href="mailto:privacy@amaliticz.com">privacy@amaliticz.com</a></p>
+<!-- FEATURES -->
+<section class="features">
+  <p class="section-label">Why AmaliticZ</p>
+  <h2 class="section-title">BUILT FOR CLARITY</h2>
+
+  <div class="feature-grid">
+    <div class="feature-card" style="--accent: var(--orange)">
+      <span class="feature-icon">🍩</span>
+      <h3>Visual Breakdown</h3>
+      <p>A live donut chart maps every purchase category — instantly beautiful, instantly clear. No spreadsheets needed.</p>
+    </div>
+    <div class="feature-card" style="--accent: var(--blue)">
+      <span class="feature-icon">📦</span>
+      <h3>Every Order Tracked</h3>
+      <p>Every item, every category, every dollar. AmaliticZ syncs with your Amazon history so nothing slips through.</p>
+    </div>
+    <div class="feature-card" style="--accent: var(--teal)">
+      <span class="feature-icon">📈</span>
+      <h3>Trend Analytics</h3>
+      <p>See how your habits shift over weeks and months. Spot patterns before they become problems.</p>
+    </div>
+    <div class="feature-card" style="--accent: var(--magenta)">
+      <span class="feature-icon">⚡</span>
+      <h3>Instant Insights</h3>
+      <p>Open the app, see the picture. No setup, no manual entry — your data, visualized in seconds.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="categories">
+  <p class="section-label">Categories we track</p>
+  <h2 class="section-title">EVERYTHING,<br>CATEGORIZED</h2>
+  <div class="cat-grid">
+    <div class="cat-pill" style="--dot: #f4883a"><div class="cat-dot"></div>Home & Kitchen</div>
+    <div class="cat-pill" style="--dot: #5ab4f5"><div class="cat-dot"></div>Electronics</div>
+    <div class="cat-pill" style="--dot: #e8566a"><div class="cat-dot"></div>Clothing & Shoes</div>
+    <div class="cat-pill" style="--dot: #4ecdc4"><div class="cat-dot"></div>Grocery & Food</div>
+    <div class="cat-pill" style="--dot: #f4c542"><div class="cat-dot"></div>Books & Media</div>
+    <div class="cat-pill" style="--dot: #c966cc"><div class="cat-dot"></div>Beauty & Health</div>
+    <div class="cat-pill" style="--dot: #7ed8c0"><div class="cat-dot"></div>Tools & Hardware</div>
+    <div class="cat-pill" style="--dot: #f48fb1"><div class="cat-dot"></div>Toys & Games</div>
+    <div class="cat-pill" style="--dot: #7ec8e3"><div class="cat-dot"></div>Sports & Outdoors</div>
+    <div class="cat-pill" style="--dot: #e87a5a"><div class="cat-dot"></div>Pet Supplies</div>
+    <div class="cat-pill" style="--dot: #8e8e93"><div class="cat-dot"></div>Uncategorized</div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <div class="glow"></div>
+  <h2 class="cta-title">
+    STOP GUESSING.<br>
+    <span class="line2">START KNOWING.</span>
+  </h2>
+  <p class="cta-sub">Download AmaliticZ free on the App Store.</p>
+  <a class="app-store-btn" href="https://apps.apple.com/app/idXXXXXXXXXX" style="display:inline-flex; position:relative; z-index:1;">
+    <svg width="22" height="27" viewBox="0 0 22 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M18.248 14.338c-.028-3.252 2.658-4.832 2.78-4.908-1.517-2.216-3.874-2.52-4.706-2.547-2-.207-3.916 1.19-4.93 1.19-1.013 0-2.574-1.164-4.232-1.132-2.165.033-4.17 1.273-5.284 3.218-2.259 3.92-.578 9.714 1.624 12.893 1.077 1.557 2.352 3.302 4.025 3.24 1.618-.066 2.226-1.047 4.183-1.047 1.957 0 2.514 1.047 4.228 1.012 1.74-.029 2.84-1.582 3.907-3.144a17.15 17.15 0 0 0 1.78-3.632c-4.164-1.592-3.37-6.144-3.375-6.143ZM15.02 4.99C15.927 3.895 16.546 2.41 16.375.895c-1.302.059-2.88.885-3.816 1.956-.836.949-1.576 2.484-1.378 3.942 1.453.113 2.934-.747 3.839-1.803Z" fill="currentColor"/>
+    </svg>
+    <div class="btn-text">
+      <small>Download on the</small>
+      <strong>App Store</strong>
+    </div>
+  </a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <img src="https://raw.githubusercontent.com/kalevet/amaliticz-privacy/main/Amaliticz_Icon.png" alt="AmaliticZ">
+        <span>AmaliticZ</span>
+      </div>
+      <p class="footer-tagline">Know where every dollar goes.</p>
+    </div>
+    <div class="footer-links">
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Use</a>
+      <a href="https://www.AmaliticZ.com/support">Support</a>
+    </div>
+  </div>
+
+  <div class="footer-divider"></div>
+
+  <div class="footer-legal">
+    <p>AmaliticZ is an independent app and is not affiliated with, endorsed by, sponsored by, or in any way officially connected with Amazon.com, Inc. or any of its subsidiaries or affiliates.</p>
+    <p>Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates. All references to Amazon on this website are for descriptive purposes only and solely to indicate compatibility with Amazon order data.</p>
+    <p>Apple, the Apple logo, and App Store are trademarks of Apple Inc., registered in the U.S. and other countries. AmaliticZ is not affiliated with or endorsed by Apple Inc.</p>
+    <p class="footer-copy">&copy; 2025 AmaliticZ. All rights reserved. All other trademarks and brand names are the property of their respective owners.</p>
+  </div>
+</footer>
+
+<script>
+  // Scroll-triggered fade-in for feature cards and category pills
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        e.target.style.animation = `fade-up 0.6s ${i * 0.08}s both`;
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feature-card, .cat-pill, .section-label, .section-title').forEach(el => {
+    el.style.opacity = '0';
+    observer.observe(el);
+  });
+</script>
+
 </body>
 </html>
