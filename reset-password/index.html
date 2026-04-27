@@ -62,6 +62,7 @@ input {
   cursor:pointer;
   font-size:12px;
   color:var(--muted);
+  user-select:none;
 }
 
 .error-text {
@@ -92,6 +93,7 @@ input {
 
 .checklist div {
   color:var(--muted);
+  transition:all 0.2s ease;
 }
 
 .checklist .valid {
@@ -128,6 +130,7 @@ button:disabled {
 .caps {
   font-size:12px;
   color:#f59e0b;
+  margin-top:4px;
 }
 </style>
 </head>
@@ -145,16 +148,16 @@ button:disabled {
 <label>New password</label>
 <div class="input-group">
   <input id="password" type="password" autocomplete="new-password" required />
-  <span class="toggle" onclick="toggle('password')">Show</span>
+  <span class="toggle" id="togglePassword">Show</span>
 </div>
 
 <div class="strength"><div id="strengthBar" class="strength-bar"></div></div>
 
-<div class="checklist" id="checklist">
-  <div id="len">• At least 8 characters</div>
-  <div id="upper">• One uppercase letter</div>
-  <div id="num">• One number</div>
-  <div id="special">• One special character</div>
+<div class="checklist">
+  <div id="len">✖ At least 8 characters</div>
+  <div id="upper">✖ One uppercase letter</div>
+  <div id="num">✖ One number</div>
+  <div id="special">✖ One special character</div>
 </div>
 
 <div id="caps" class="caps hidden">Caps Lock is ON</div>
@@ -162,7 +165,7 @@ button:disabled {
 <label>Confirm password</label>
 <div class="input-group">
   <input id="confirm" type="password" autocomplete="new-password" required />
-  <span class="toggle" onclick="toggle('confirm')">Show</span>
+  <span class="toggle" id="toggleConfirm">Show</span>
 </div>
 
 <div id="confirmError" class="error-text"></div>
@@ -181,6 +184,7 @@ button:disabled {
 <script>
 const SUPABASE_URL="https://YOUR_PROJECT.supabase.co";
 const SUPABASE_ANON_KEY="YOUR_PUBLIC_ANON_KEY";
+
 const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
 const passwordEl=document.getElementById("password");
@@ -193,19 +197,37 @@ const form=document.getElementById("form");
 const successActions=document.getElementById("successActions");
 const caps=document.getElementById("caps");
 
-// checklist items
 const len=document.getElementById("len");
 const upper=document.getElementById("upper");
 const num=document.getElementById("num");
 const special=document.getElementById("special");
 
-// --- toggle visibility ---
-function toggle(id){
-  const el=document.getElementById(id);
-  el.type=el.type==="password"?"text":"password";
+// --- SHOW / HIDE TOGGLE (FIXED) ---
+function attachToggle(toggleEl, inputEl){
+  toggleEl.addEventListener("click", () => {
+    const isHidden = inputEl.type === "password";
+    inputEl.type = isHidden ? "text" : "password";
+    toggleEl.textContent = isHidden ? "Hide" : "Show";
+    toggleEl.setAttribute("aria-pressed", isHidden);
+  });
 }
 
-// --- strength ---
+attachToggle(document.getElementById("togglePassword"), passwordEl);
+attachToggle(document.getElementById("toggleConfirm"), confirmEl);
+
+// --- CHECKMARK HANDLER ---
+function setCheck(el, condition){
+  const text = el.textContent.slice(2);
+  if(condition){
+    el.textContent = "✔ " + text;
+    el.classList.add("valid");
+  }else{
+    el.textContent = "✖ " + text;
+    el.classList.remove("valid");
+  }
+}
+
+// --- STRENGTH ---
 function strength(p){
   let s=0;
   if(p.length>=8)s++;
@@ -215,31 +237,28 @@ function strength(p){
   return s;
 }
 
+// --- UI UPDATE ---
 function updateUI(){
   const p=passwordEl.value;
   const c=confirmEl.value;
 
-  // checklist
-  len.classList.toggle("valid",p.length>=8);
-  upper.classList.toggle("valid",/[A-Z]/.test(p));
-  num.classList.toggle("valid",/[0-9]/.test(p));
-  special.classList.toggle("valid",/[^A-Za-z0-9]/.test(p));
+  setCheck(len, p.length>=8);
+  setCheck(upper, /[A-Z]/.test(p));
+  setCheck(num, /[0-9]/.test(p));
+  setCheck(special, /[^A-Za-z0-9]/.test(p));
 
-  // strength bar
   const s=strength(p);
   strengthBar.style.width=(s*25)+"%";
   const colors=["#dc2626","#f59e0b","#3b82f6","#16a34a"];
   strengthBar.style.background=colors[s-1]||"#eee";
 
-  // confirm
   if(c && p!==c){
     confirmError.textContent="Passwords do not match.";
-  }else{
+  } else {
     confirmError.textContent="";
   }
 
-  // enable submit
-  submitBtn.disabled=!(
+  submitBtn.disabled = !(
     p.length>=8 &&
     /[A-Z]/.test(p) &&
     /[0-9]/.test(p) &&
@@ -248,23 +267,22 @@ function updateUI(){
   );
 }
 
-// --- caps lock detection ---
-function detectCaps(e){
+passwordEl.addEventListener("input", updateUI);
+confirmEl.addEventListener("input", updateUI);
+
+// --- CAPS LOCK ---
+passwordEl.addEventListener("keyup",(e)=>{
   if(e.getModifierState && e.getModifierState("CapsLock")){
     caps.classList.remove("hidden");
-  }else{
+  } else {
     caps.classList.add("hidden");
   }
-}
+});
 
-passwordEl.addEventListener("input",updateUI);
-confirmEl.addEventListener("input",updateUI);
-passwordEl.addEventListener("keyup",detectCaps);
-
-// autofill fix (important)
+// autofill fix
 setTimeout(updateUI,500);
 
-// --- tokens ---
+// --- TOKENS ---
 function getTokens(){
   const h=window.location.hash.substring(1);
   const p=new URLSearchParams(h);
@@ -275,7 +293,7 @@ function getTokens(){
   };
 }
 
-// --- init ---
+// --- INIT ---
 async function init(){
   const {access_token,refresh_token,type}=getTokens();
 
@@ -302,7 +320,7 @@ function show(t,type){
 
 init();
 
-// --- submit ---
+// --- SUBMIT ---
 form.addEventListener("submit",async(e)=>{
   e.preventDefault();
   if(submitBtn.disabled)return;
@@ -323,10 +341,9 @@ form.addEventListener("submit",async(e)=>{
   successActions.classList.remove("hidden");
 });
 
-// --- UX improvements ---
+// --- UX ---
 passwordEl.focus();
 
-// enter key jump
 passwordEl.addEventListener("keydown",(e)=>{
   if(e.key==="Enter"){
     e.preventDefault();
@@ -334,7 +351,7 @@ passwordEl.addEventListener("keydown",(e)=>{
   }
 });
 
-// --- deep link ---
+// --- DEEP LINK ---
 function openApp(){
   const start=Date.now();
   window.location.href="amaliticz://";
