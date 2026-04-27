@@ -382,9 +382,9 @@
        VIEW 2: Expired / Invalid link
   ════════════════════════════════════════ -->
   <div id="view-invalid" class="view">
-    <div class="invalid-icon">🔗</div>
-    <h1>Link unavailable</h1>
-    <p class="subtitle" style="margin-bottom:0;">
+    <div class="invalid-icon" id="invalid-icon">🔗</div>
+    <h1 id="invalid-title">Link unavailable</h1>
+    <p class="subtitle" style="margin-bottom:0;" id="invalid-body">
       This password reset link has expired or already been used.
       Please request a new one from the app.
     </p>
@@ -409,7 +409,7 @@
 
 </div><!-- /card -->
 
-<p class="page-footer">&copy; 2026 AmaliticZ</p>
+<p class="page-footer">&copy; 2025 AmaliticZ</p>
 
 
 <script>
@@ -499,7 +499,34 @@ async function init() {
     return;
   }
 
-  // Neither flow matched — link is missing, expired, or already used
+  // Check if Supabase returned an explicit error in the URL
+  // e.g. ?error=access_denied&error_code=otp_expired
+  const errorCode = urlParams.get('error_code');
+  const errorDesc = urlParams.get('error_description');
+
+  if (errorCode === 'otp_expired' || errorDesc?.includes('expired')) {
+    document.getElementById('invalid-icon').textContent = '⏱️';
+    document.getElementById('invalid-title').textContent = 'Link expired';
+    document.getElementById('invalid-body').textContent =
+      'This password reset link has expired. Links are valid for 1 hour. Please go back to the app and request a new one.';
+    showView('view-invalid');
+    return;
+  }
+
+  if (errorCode === 'access_denied' || urlParams.get('error')) {
+    document.getElementById('invalid-icon').textContent = '🚫';
+    document.getElementById('invalid-title').textContent = 'Link already used';
+    document.getElementById('invalid-body').textContent =
+      'This reset link has already been used. If you need to change your password again, please request a new link from the app.';
+    showView('view-invalid');
+    return;
+  }
+
+  // No code, no error — page visited directly with no token at all
+  document.getElementById('invalid-icon').textContent = '🔗';
+  document.getElementById('invalid-title').textContent = 'No reset link found';
+  document.getElementById('invalid-body').textContent =
+    'This page can only be accessed via the password reset link sent to your email. Please request a new one from the app.';
   showView('view-invalid');
 }
 
