@@ -1,371 +1,647 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Reset Password</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Reset Password – AmaliticZ</title>
+  <meta name="robots" content="noindex, nofollow" />
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase JS v2 via CDN — no build step needed -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<style>
-:root {
-  --primary:#111;
-  --accent:#2563eb;
-  --error:#dc2626;
-  --success:#16a34a;
-  --muted:#6b7280;
-  --bg:#f9fafb;
-}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-body {
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
-  background:var(--bg);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:100vh;
-}
+  <style>
+    /* ── Reset & variables ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.card {
-  width:100%;
-  max-width:420px;
-  background:white;
-  padding:24px;
-  border-radius:16px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.05);
-}
+    :root {
+      --bg:       #000000;
+      --surface:  #1c1c1e;
+      --surface2: #2c2c2e;
+      --border:   rgba(255,255,255,0.08);
+      --text:     #f0f0f2;
+      --muted:    #8e8e93;
+      --muted2:   #48484a;
+      --orange:   #f4883a;
+      --teal:     #4ecdc4;
+      --red:      #e8566a;
+      --green:    #4caf50;
+      --radius:   16px;
+    }
 
-h1 { margin-bottom:6px; }
-p { color:var(--muted); font-size:14px; }
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Figtree', sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
 
-label { font-size:13px; font-weight:500; }
+    /* ── Card ── */
+    .card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 36px 28px 32px;
+      animation: rise 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
 
-.input-group {
-  position:relative;
-}
+    /* ── Logo ── */
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .logo-wrap img {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+    }
+    .logo-wrap span {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
 
-input {
-  width:100%;
-  padding:12px;
-  margin-top:6px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  font-size:16px;
-}
+    /* ── Headings ── */
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
 
-.toggle {
-  position:absolute;
-  right:10px;
-  top:50%;
-  transform:translateY(-50%);
-  cursor:pointer;
-  font-size:12px;
-  color:var(--muted);
-  user-select:none;
-}
+    /* ── Form fields ── */
+    .field {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
 
-.error-text {
-  font-size:12px;
-  color:var(--error);
-  min-height:16px;
-  margin-top:4px;
-}
+    /* Password wrapper holds input + toggle button */
+    .pw-wrap {
+      position: relative;
+    }
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 44px 13px 14px;
+      font-family: 'Figtree', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      /* prevent iOS zoom on focus (font-size >= 16px prevents it, but 15px needs this) */
+      -webkit-text-size-adjust: 100%;
+    }
+    input:focus {
+      border-color: var(--orange);
+    }
+    input.error-field {
+      border-color: var(--red);
+    }
 
-.strength {
-  height:6px;
-  border-radius:6px;
-  background:#eee;
-  overflow:hidden;
-  margin-top:6px;
-}
+    /* Show/hide password toggle */
+    .toggle-pw {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      color: var(--muted);
+      line-height: 0;
+      transition: color 0.2s;
+    }
+    .toggle-pw:hover { color: var(--text); }
 
-.strength-bar {
-  height:100%;
-  width:0%;
-  transition:width 0.3s;
-}
+    /* Password strength bar */
+    .strength-bar-wrap {
+      margin-top: 8px;
+      height: 3px;
+      background: var(--surface2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .strength-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      transition: width 0.3s, background 0.3s;
+    }
+    .strength-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 5px;
+      min-height: 16px;
+    }
 
-.checklist {
-  font-size:12px;
-  margin-top:6px;
-}
+    /* ── Inline field error ── */
+    .field-error {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 6px;
+      display: none;
+    }
+    .field-error.visible { display: block; }
 
-.checklist div {
-  color:var(--muted);
-  transition:all 0.2s ease;
-}
+    /* ── Submit button ── */
+    .btn-submit {
+      width: 100%;
+      margin-top: 8px;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      background: var(--text);
+      color: var(--bg);
+      font-family: 'Figtree', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      position: relative;
+    }
+    .btn-submit:hover:not(:disabled) { opacity: 0.9; }
+    .btn-submit:active:not(:disabled) { transform: scale(0.98); }
+    .btn-submit:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
 
-.checklist .valid {
-  color:var(--success);
-}
+    /* Spinner inside button */
+    .btn-submit .spinner {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+    .btn-submit.loading .btn-label { display: none; }
+    .btn-submit.loading .spinner   { display: block; }
 
-button {
-  width:100%;
-  padding:12px;
-  margin-top:14px;
-  border-radius:10px;
-  border:none;
-  background:var(--primary);
-  color:white;
-  font-size:16px;
-}
+    /* ── Alert banners ── */
+    .alert {
+      display: none;
+      border-radius: 10px;
+      padding: 13px 15px;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .alert.visible { display: block; }
+    .alert-error   { background: rgba(232,86,106,0.12); color: #f48fb1; border: 1px solid rgba(232,86,106,0.25); }
+    .alert-success { background: rgba(76,175,80,0.12);  color: #81c784; border: 1px solid rgba(76,175,80,0.25); }
 
-button:disabled {
-  opacity:0.5;
-  cursor:not-allowed;
-}
+    /* ── Views (form / invalid / success) ── */
+    /* Only one view shown at a time via JS */
+    .view { display: none; }
+    .view.active { display: block; }
 
-.secondary {
-  background:#e5e7eb;
-  color:#111;
-}
+    /* ── Success state actions ── */
+    .success-icon {
+      font-size: 44px;
+      text-align: center;
+      margin-bottom: 16px;
+      animation: pop 0.5s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    .action-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .btn-primary, .btn-secondary {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      font-family: 'Figtree', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--text);
+      color: var(--bg);
+    }
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--muted);
+    }
+    .btn-primary:hover,
+    .btn-secondary:hover { opacity: 0.85; }
+    .btn-primary:active,
+    .btn-secondary:active { transform: scale(0.98); }
 
-.message { margin-bottom:10px; }
-.error { color:var(--error); }
-.success { color:var(--success); }
+    /* ── Invalid link state ── */
+    .invalid-icon {
+      font-size: 40px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
 
-.hidden { display:none; }
+    /* ── Animations ── */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pop {
+      from { transform: scale(0.6); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
-.caps {
-  font-size:12px;
-  color:#f59e0b;
-  margin-top:4px;
-}
-</style>
+    /* ── Footer note ── */
+    .page-footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--muted2);
+      text-align: center;
+    }
+
+    /* ── Larger screens: just a little more breathing room ── */
+    @media (min-width: 480px) {
+      .card { padding: 44px 40px 40px; }
+    }
+  </style>
 </head>
-
 <body>
+
 <div class="card">
 
-<h1>Reset your password</h1>
-<p>Create a new secure password.</p>
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <img src="https://raw.githubusercontent.com/kalevet/amaliticz-privacy/main/Amaliticz_Icon.png" alt="AmaliticZ logo" />
+    <span>AmaliticZ</span>
+  </div>
 
-<div id="message" class="message"></div>
+  <!-- ═══════════════════════════════════════
+       VIEW 1: Password Reset Form
+  ════════════════════════════════════════ -->
+  <div id="view-form" class="view">
 
-<form id="form">
+    <h1>Set new password</h1>
+    <p class="subtitle">Choose a strong password for your account.</p>
 
-<label>New password</label>
-<div class="input-group">
-  <input id="password" type="password" autocomplete="new-password" required />
-  <span class="toggle" id="togglePassword">Show</span>
-</div>
+    <!-- General error banner (network / Supabase errors) -->
+    <div id="alert-error" class="alert alert-error" role="alert" aria-live="polite"></div>
 
-<div class="strength"><div id="strengthBar" class="strength-bar"></div></div>
+    <form id="reset-form" novalidate>
 
-<div class="checklist">
-  <div id="len">✖ At least 8 characters</div>
-  <div id="upper">✖ One uppercase letter</div>
-  <div id="num">✖ One number</div>
-  <div id="special">✖ One special character</div>
-</div>
+      <!-- New password -->
+      <div class="field">
+        <label for="password">New Password</label>
+        <div class="pw-wrap">
+          <input
+            id="password"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Minimum 8 characters"
+            aria-describedby="password-error strength-label"
+            required
+          />
+          <button type="button" class="toggle-pw" aria-label="Show password" data-target="password">
+            <!-- eye icon -->
+            <svg id="eye-pw" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <!-- Strength bar -->
+        <div class="strength-bar-wrap" aria-hidden="true">
+          <div id="strength-bar" class="strength-bar"></div>
+        </div>
+        <p id="strength-label" class="strength-label" aria-live="polite"></p>
+        <p id="password-error" class="field-error" role="alert"></p>
+      </div>
 
-<div id="caps" class="caps hidden">Caps Lock is ON</div>
+      <!-- Confirm password -->
+      <div class="field">
+        <label for="confirm">Confirm Password</label>
+        <div class="pw-wrap">
+          <input
+            id="confirm"
+            type="password"
+            autocomplete="new-password"
+            placeholder="Re-enter your password"
+            aria-describedby="confirm-error"
+            required
+          />
+          <button type="button" class="toggle-pw" aria-label="Show confirm password" data-target="confirm">
+            <svg id="eye-confirm" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <p id="confirm-error" class="field-error" role="alert"></p>
+      </div>
 
-<label>Confirm password</label>
-<div class="input-group">
-  <input id="confirm" type="password" autocomplete="new-password" required />
-  <span class="toggle" id="toggleConfirm">Show</span>
-</div>
+      <button type="submit" id="btn-submit" class="btn-submit" disabled>
+        <span class="btn-label">Update Password</span>
+        <span class="spinner" aria-hidden="true"></span>
+      </button>
 
-<div id="confirmError" class="error-text"></div>
+    </form>
+  </div><!-- /view-form -->
 
-<button id="submitBtn" disabled>Update password</button>
 
-</form>
+  <!-- ═══════════════════════════════════════
+       VIEW 2: Expired / Invalid link
+  ════════════════════════════════════════ -->
+  <div id="view-invalid" class="view">
+    <div class="invalid-icon">🔗</div>
+    <h1>Link unavailable</h1>
+    <p class="subtitle" style="margin-bottom:0;">
+      This password reset link has expired or already been used.
+      Please request a new one from the app.
+    </p>
+  </div>
 
-<div id="successActions" class="hidden">
-  <button onclick="openApp()">Open AmaliticZ App</button>
-  <button class="secondary" onclick="goToLogin()">Back to Sign In</button>
-</div>
 
-</div>
+  <!-- ═══════════════════════════════════════
+       VIEW 3: Success
+  ════════════════════════════════════════ -->
+  <div id="view-success" class="view">
+    <div class="success-icon">✅</div>
+    <h1>Password updated</h1>
+    <p class="subtitle" style="margin-bottom:0;">
+      Your password has been changed successfully.
+      Return to the app to log in.
+    </p>
+    <div class="action-btns">
+      <button id="btn-open-app" class="btn-primary">Open AmaliticZ App</button>
+      <a href="https://www.amaliticz.com" class="btn-secondary">Back to Website</a>
+    </div>
+  </div>
+
+</div><!-- /card -->
+
+<p class="page-footer">&copy; 2025 AmaliticZ</p>
+
 
 <script>
-const SUPABASE_URL="https://YOUR_PROJECT.supabase.co";
-const SUPABASE_ANON_KEY="YOUR_PUBLIC_ANON_KEY";
+// ─────────────────────────────────────────────────────────────
+//  CONFIGURATION  ← update these two values
+// ─────────────────────────────────────────────────────────────
+const SUPABASE_URL     = 'https://YOUR_PROJECT_ID.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_PUBLIC_KEY';
+const APP_SCHEME       = 'amaliticz://';           // iOS deep link
+const IOS_STORE_URL    = 'https://apps.apple.com/app/idXXXXXXXXXX';
+// ─────────────────────────────────────────────────────────────
 
-const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+// Initialise Supabase client (v2 from CDN)
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const passwordEl=document.getElementById("password");
-const confirmEl=document.getElementById("confirm");
-const submitBtn=document.getElementById("submitBtn");
-const strengthBar=document.getElementById("strengthBar");
-const confirmError=document.getElementById("confirmError");
-const msg=document.getElementById("message");
-const form=document.getElementById("form");
-const successActions=document.getElementById("successActions");
-const caps=document.getElementById("caps");
+// ── DOM refs ──────────────────────────────────────────────────
+const viewForm    = document.getElementById('view-form');
+const viewInvalid = document.getElementById('view-invalid');
+const viewSuccess = document.getElementById('view-success');
+const form        = document.getElementById('reset-form');
+const pwInput     = document.getElementById('password');
+const cfInput     = document.getElementById('confirm');
+const btnSubmit   = document.getElementById('btn-submit');
+const alertError  = document.getElementById('alert-error');
+const pwError     = document.getElementById('password-error');
+const cfError     = document.getElementById('confirm-error');
+const strengthBar = document.getElementById('strength-bar');
+const strengthLbl = document.getElementById('strength-label');
+const btnOpenApp  = document.getElementById('btn-open-app');
 
-const len=document.getElementById("len");
-const upper=document.getElementById("upper");
-const num=document.getElementById("num");
-const special=document.getElementById("special");
+// ── Show a specific view ──────────────────────────────────────
+function showView(id) {
+  [viewForm, viewInvalid, viewSuccess].forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
 
-// --- SHOW / HIDE TOGGLE (FIXED) ---
-function attachToggle(toggleEl, inputEl){
-  toggleEl.addEventListener("click", () => {
-    const isHidden = inputEl.type === "password";
-    inputEl.type = isHidden ? "text" : "password";
-    toggleEl.textContent = isHidden ? "Hide" : "Show";
-    toggleEl.setAttribute("aria-pressed", isHidden);
+// ── Parse hash fragment (#access_token=...&type=recovery) ────
+function parseHash() {
+  const hash = window.location.hash.slice(1); // remove leading '#'
+  const params = {};
+  hash.split('&').forEach(pair => {
+    const [k, v] = pair.split('=');
+    if (k) params[decodeURIComponent(k)] = decodeURIComponent(v || '');
   });
+  return params;
 }
 
-attachToggle(document.getElementById("togglePassword"), passwordEl);
-attachToggle(document.getElementById("toggleConfirm"), confirmEl);
+// ── On page load: validate the reset link ────────────────────
+async function init() {
+  const params = parseHash();
 
-// --- CHECKMARK HANDLER ---
-function setCheck(el, condition){
-  const text = el.textContent.slice(2);
-  if(condition){
-    el.textContent = "✔ " + text;
-    el.classList.add("valid");
-  }else{
-    el.textContent = "✖ " + text;
-    el.classList.remove("valid");
-  }
-}
-
-// --- STRENGTH ---
-function strength(p){
-  let s=0;
-  if(p.length>=8)s++;
-  if(/[A-Z]/.test(p))s++;
-  if(/[0-9]/.test(p))s++;
-  if(/[^A-Za-z0-9]/.test(p))s++;
-  return s;
-}
-
-// --- UI UPDATE ---
-function updateUI(){
-  const p=passwordEl.value;
-  const c=confirmEl.value;
-
-  setCheck(len, p.length>=8);
-  setCheck(upper, /[A-Z]/.test(p));
-  setCheck(num, /[0-9]/.test(p));
-  setCheck(special, /[^A-Za-z0-9]/.test(p));
-
-  const s=strength(p);
-  strengthBar.style.width=(s*25)+"%";
-  const colors=["#dc2626","#f59e0b","#3b82f6","#16a34a"];
-  strengthBar.style.background=colors[s-1]||"#eee";
-
-  if(c && p!==c){
-    confirmError.textContent="Passwords do not match.";
-  } else {
-    confirmError.textContent="";
-  }
-
-  submitBtn.disabled = !(
-    p.length>=8 &&
-    /[A-Z]/.test(p) &&
-    /[0-9]/.test(p) &&
-    /[^A-Za-z0-9]/.test(p) &&
-    p===c
-  );
-}
-
-passwordEl.addEventListener("input", updateUI);
-confirmEl.addEventListener("input", updateUI);
-
-// --- CAPS LOCK ---
-passwordEl.addEventListener("keyup",(e)=>{
-  if(e.getModifierState && e.getModifierState("CapsLock")){
-    caps.classList.remove("hidden");
-  } else {
-    caps.classList.add("hidden");
-  }
-});
-
-// autofill fix
-setTimeout(updateUI,500);
-
-// --- TOKENS ---
-function getTokens(){
-  const h=window.location.hash.substring(1);
-  const p=new URLSearchParams(h);
-  return {
-    access_token:p.get("access_token"),
-    refresh_token:p.get("refresh_token"),
-    type:p.get("type")
-  };
-}
-
-// --- INIT ---
-async function init(){
-  const {access_token,refresh_token,type}=getTokens();
-
-  if(!access_token||type!=="recovery"){
-    show("Invalid or expired link","error");
-    form.classList.add("hidden");
+  // Supabase puts type=recovery for password reset links
+  if (!params.access_token || !params.refresh_token || params.type !== 'recovery') {
+    showView('view-invalid');
     return;
   }
 
-  const {error}=await supabase.auth.setSession({
-    access_token,refresh_token
+  // Establish the session from the tokens in the URL
+  // This must be done before calling updateUser
+  const { error } = await sb.auth.setSession({
+    access_token:  params.access_token,
+    refresh_token: params.refresh_token,
   });
 
-  if(error){
-    show("Invalid or expired link","error");
-    form.classList.add("hidden");
+  if (error) {
+    // Token is expired or already used
+    showView('view-invalid');
+    return;
   }
+
+  // Tokens are valid — show the form
+  showView('view-form');
+
+  // Clear hash from URL bar so tokens aren't visible or accidentally shared
+  history.replaceState(null, '', window.location.pathname);
 }
 
-function show(t,type){
-  msg.textContent=t;
-  msg.className="message "+type;
+// ── Password strength scorer (0–4) ───────────────────────────
+function scorePassword(pw) {
+  let score = 0;
+  if (pw.length >= 8)  score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw))  score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  return Math.min(score, 4);
 }
 
-init();
+const strengthMeta = [
+  { label: '',          color: 'transparent', width: '0%'   },
+  { label: 'Weak',      color: '#e8566a',     width: '25%'  },
+  { label: 'Fair',      color: '#f4883a',     width: '50%'  },
+  { label: 'Good',      color: '#f4c542',     width: '75%'  },
+  { label: 'Strong',    color: '#4ecdc4',     width: '100%' },
+];
 
-// --- SUBMIT ---
-form.addEventListener("submit",async(e)=>{
+function updateStrength(pw) {
+  const score = pw.length === 0 ? 0 : Math.max(1, scorePassword(pw));
+  const meta  = strengthMeta[score];
+  strengthBar.style.width      = meta.width;
+  strengthBar.style.background = meta.color;
+  strengthLbl.textContent      = pw.length ? meta.label : '';
+}
+
+// ── Live validation helpers ───────────────────────────────────
+function clearFieldError(input, errorEl) {
+  input.classList.remove('error-field');
+  errorEl.textContent = '';
+  errorEl.classList.remove('visible');
+}
+
+function setFieldError(input, errorEl, msg) {
+  input.classList.add('error-field');
+  errorEl.textContent = msg;
+  errorEl.classList.add('visible');
+}
+
+function showAlert(msg) {
+  alertError.textContent = msg;
+  alertError.classList.add('visible');
+}
+
+function clearAlert() {
+  alertError.textContent = '';
+  alertError.classList.remove('visible');
+}
+
+// Enable submit only when both fields have content
+function checkFormReady() {
+  btnSubmit.disabled = !(pwInput.value.length > 0 && cfInput.value.length > 0);
+}
+
+// ── Input event listeners ─────────────────────────────────────
+pwInput.addEventListener('input', () => {
+  clearFieldError(pwInput, pwError);
+  clearAlert();
+  updateStrength(pwInput.value);
+  checkFormReady();
+  // Re-validate confirm if already touched
+  if (cfInput.value.length > 0 && cfInput.value !== pwInput.value) {
+    setFieldError(cfInput, cfError, 'Passwords do not match.');
+  } else {
+    clearFieldError(cfInput, cfError);
+  }
+});
+
+cfInput.addEventListener('input', () => {
+  clearFieldError(cfInput, cfError);
+  clearAlert();
+  checkFormReady();
+});
+
+cfInput.addEventListener('blur', () => {
+  if (cfInput.value.length > 0 && cfInput.value !== pwInput.value) {
+    setFieldError(cfInput, cfError, 'Passwords do not match.');
+  }
+});
+
+// ── Show/hide password toggles ────────────────────────────────
+document.querySelectorAll('.toggle-pw').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.getElementById(btn.dataset.target);
+    const isHidden = target.type === 'password';
+    target.type = isHidden ? 'text' : 'password';
+    btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    // Swap icon opacity as visual hint
+    btn.querySelector('svg').style.opacity = isHidden ? '1' : '0.4';
+  });
+});
+
+// ── Form submit ───────────────────────────────────────────────
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  if(submitBtn.disabled)return;
+  clearAlert();
 
-  show("Updating password...","");
+  const pw = pwInput.value;
+  const cf = cfInput.value;
+  let valid = true;
 
-  const {error}=await supabase.auth.updateUser({
-    password:passwordEl.value
-  });
+  // Client-side validation
+  if (pw.length < 8) {
+    setFieldError(pwInput, pwError, 'Password must be at least 8 characters.');
+    valid = false;
+  }
+  if (pw !== cf) {
+    setFieldError(cfInput, cfError, 'Passwords do not match.');
+    valid = false;
+  }
+  if (!valid) return;
 
-  if(error){
-    show(error.message,"error");
+  // Loading state
+  btnSubmit.disabled = true;
+  btnSubmit.classList.add('loading');
+
+  const { error } = await sb.auth.updateUser({ password: pw });
+
+  btnSubmit.classList.remove('loading');
+
+  if (error) {
+    btnSubmit.disabled = false;
+    // Use a generic message — do not reveal specifics that could enumerate users
+    if (error.status === 422) {
+      // Supabase returns 422 when new password is same as old, or too weak
+      showAlert('Please choose a stronger password and try again.');
+    } else {
+      showAlert('Something went wrong. Please try again or request a new reset link.');
+    }
     return;
   }
 
-  show("Password updated successfully","success");
-  form.classList.add("hidden");
-  successActions.classList.remove("hidden");
+  // Sign out after reset so the temporary session is cleaned up
+  await sb.auth.signOut();
+
+  showView('view-success');
 });
 
-// --- UX ---
-passwordEl.focus();
+// ── Open App button with deep link + store fallback ───────────
+btnOpenApp.addEventListener('click', () => {
+  // Try the custom URL scheme — will open the app if installed
+  window.location.href = APP_SCHEME;
 
-passwordEl.addEventListener("keydown",(e)=>{
-  if(e.key==="Enter"){
-    e.preventDefault();
-    confirmEl.focus();
-  }
-});
-
-// --- DEEP LINK ---
-function openApp(){
-  const start=Date.now();
-  window.location.href="amaliticz://";
-
-  setTimeout(()=>{
-    if(Date.now()-start<2000){
-      window.location.href="https://www.amaliticz.com";
+  // After 1.5s, if the app didn't open (page still visible), redirect to App Store
+  setTimeout(() => {
+    if (document.visibilityState !== 'hidden') {
+      window.location.href = IOS_STORE_URL;
     }
-  },1500);
-}
+  }, 1500);
+});
 
-function goToLogin(){
-  window.location.href="https://www.amaliticz.com/login";
-}
+// ── Kick off init ─────────────────────────────────────────────
+init();
 </script>
 
 </body>
