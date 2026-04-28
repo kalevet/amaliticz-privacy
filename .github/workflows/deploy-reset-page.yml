@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - "index.html"
+      - "reset-password/index.html"
       - ".github/workflows/deploy-reset-page.yml"
   workflow_dispatch:
 
@@ -23,6 +24,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,6 +33,15 @@ jobs:
         run: |
           sed -i "s|__SUPABASE_URL__|${{ secrets.SUPABASE_URL }}|g" index.html
           sed -i "s|__SUPABASE_ANON_KEY__|${{ secrets.SUPABASE_ANON_KEY }}|g" index.html
+          sed -i "s|__SUPABASE_URL__|${{ secrets.SUPABASE_URL }}|g" reset-password/index.html
+          sed -i "s|__SUPABASE_ANON_KEY__|${{ secrets.SUPABASE_ANON_KEY }}|g" reset-password/index.html
+
+      - name: Verify placeholders replaced
+        run: |
+          if grep -R "__SUPABASE_URL__\\|__SUPABASE_ANON_KEY__" index.html reset-password/index.html; then
+            echo "Placeholders still found after injection"
+            exit 1
+          fi
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
