@@ -45,10 +45,54 @@
       align-items: center;
     }
 
-    .donut-wrap { position: relative; width: 170px; height: 170px; margin-bottom: 18px; }
-    .donut-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-    .logo { width: 56px; height: 56px; border-radius: 14px; box-shadow: 0 0 0 1px rgba(255,255,255,.1); }
-    .donut-center { position: absolute; inset: 0; display: grid; place-items: center; }
+    /* Stable donut for iOS Safari */
+    .donut-wrap {
+      position: relative;
+      width: 170px;
+      height: 170px;
+      margin-bottom: 18px;
+      display: grid;
+      place-items: center;
+    }
+
+    .donut {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background:
+        conic-gradient(
+          #f4883a 0deg 72deg,
+          #111218 72deg 86deg,
+          #5ab4f5 86deg 132deg,
+          #111218 132deg 145deg,
+          #f48fb1 145deg 177deg,
+          #111218 177deg 191deg,
+          #4ecdc4 191deg 244deg,
+          #111218 244deg 258deg,
+          #7ed8c0 258deg 304deg,
+          #111218 304deg 318deg,
+          #2c2c2e 318deg 360deg
+        );
+      position: relative;
+    }
+
+    .donut::after {
+      content: "";
+      position: absolute;
+      inset: 23px;
+      border-radius: 50%;
+      background: var(--bg);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    .logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.1);
+      position: absolute;
+      z-index: 2;
+    }
 
     h1 { font-size: 30px; font-weight: 800; text-align: center; line-height: 1.15; margin-bottom: 10px; }
     .sub { font-size: 15px; color: var(--muted); text-align: center; line-height: 1.6; margin-bottom: 18px; }
@@ -76,7 +120,6 @@
     }
 
     .field { margin-bottom: 12px; }
-
     label {
       display: block;
       font-size: 11px;
@@ -128,16 +171,8 @@
 <body>
   <div class="wrap">
     <div class="donut-wrap">
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#1c1c1e" stroke-width="13"/>
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#f4883a" stroke-width="13" stroke-dasharray="42 1000" stroke-dashoffset="0"/>
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#5ab4f5" stroke-width="13" stroke-dasharray="28 1000" stroke-dashoffset="-44"/>
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#f48fb1" stroke-width="13" stroke-dasharray="18 1000" stroke-dashoffset="-74"/>
-        <circle cx="50" cy="50" r="38" fill="none" stroke="#4ecdc4" stroke-width="13" stroke-dasharray="26 1000" stroke-dashoffset="-94"/>
-      </svg>
-      <div class="donut-center">
-        <img class="logo" src="https://raw.githubusercontent.com/kalevet/amaliticz-privacy/main/Amaliticz_Icon.png" alt="AmaliticZ" />
-      </div>
+      <div class="donut"></div>
+      <img class="logo" src="https://raw.githubusercontent.com/kalevet/amaliticz-privacy/main/Amaliticz_Icon.png" alt="AmaliticZ" />
     </div>
 
     <h1>Support Intake</h1>
@@ -255,9 +290,7 @@
 
         clearTimeout(timeoutId);
 
-        if (!res.ok) {
-          throw new Error("Submit failed");
-        }
+        if (!res.ok) throw new Error("Submit failed");
 
         form.reset();
         setSuccess("Thanks. Your support request was sent to support@amaliticz.com.");
