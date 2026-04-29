@@ -5,271 +5,265 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Reset Password - AmaliticZ</title>
   <meta name="robots" content="noindex, nofollow" />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     :root {
-      --bg:#000; --surface:#1c1c1e; --surface2:#2c2c2e; --border:rgba(255,255,255,.08);
-      --text:#f0f0f2; --muted:#8e8e93; --muted2:#48484a; --red:#e8566a;
+      --bg: #000000;
+      --surface: #1c1c1e;
+      --surface2: #2c2c2e;
+      --text: #ffffff;
+      --muted: #8e8e93;
+      --muted2: #48484a;
+      --orange:  #f4883a;
+      --blue:    #5ab4f5;
+      --teal:    #4ecdc4;
+      --mint:    #7ed8c0;
+      --pink:    #f48fb1;
+      --yellow:  #f4c542;
+      --magenta: #c966cc;
+      --red:     #e8566a;
+      --coral:   #e87a5a;
+      --sky:     #7ec8e3;
+      --radius: 18px;
+      --border: rgba(255,255,255,0.08);
     }
+
     html, body {
-      min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center;
-      background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; padding:20px;
+      background: var(--bg);
+      font-family: 'Figtree', sans-serif;
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 18px;
     }
-    .card { width:100%; max-width:420px; background:var(--surface); border-radius:16px; padding:28px; }
-    h1 { font-size:22px; margin-bottom:8px; }
-    .subtitle { color:var(--muted); font-size:14px; margin-bottom:20px; line-height:1.45; }
-    .view { display:none; }
-    .view.active { display:block; }
-    label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.06em; }
-    .field { margin-bottom:14px; }
+
+    .wrap {
+      width: 100%;
+      max-width: 390px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* hero */
+    .donut-wrap {
+      position: relative;
+      width: 196px;
+      height: 196px;
+      margin-bottom: 24px;
+      animation: rise 0.65s 0.12s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    .donut-wrap svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .seg {
+      stroke-dasharray: 0 1000;
+      animation: draw 1s 0.25s cubic-bezier(.22,1,.36,1) forwards;
+    }
+
+    @keyframes draw { to { stroke-dasharray: var(--len) 1000; } }
+
+    .donut-center {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    .logo {
+      width: 62px;
+      height: 62px;
+      border-radius: 14px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+      animation: pop 0.5s 0.55s cubic-bezier(.34,1.56,.64,1) both;
+    }
+
+    h1 {
+      font-size: 30px;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.15;
+      margin-bottom: 10px;
+      animation: fade-up 0.45s 0.2s both;
+    }
+
+    .sub {
+      font-size: 15px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      animation: fade-up 0.45s 0.3s both;
+    }
+
+    .card {
+      width: 100%;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 18px;
+      animation: fade-up 0.45s 0.38s both;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .alert {
+      display: none;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .alert.visible { display: block; }
+
+    .alert-error {
+      background: rgba(232,86,106,.12);
+      border: 1px solid rgba(232,86,106,.25);
+      color: #f48fb1;
+    }
+
+    .field { margin-bottom: 14px; }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .pw-wrap {
+      position: relative;
+    }
+
     input {
-      width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text);
-      border-radius:10px; padding:12px; font-size:15px; outline:none;
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 12px 58px 12px 12px;
+      font-size: 15px;
+      outline: none;
     }
-    input:focus { border-color:#888; }
-    .field-error { display:none; color:var(--red); font-size:12px; margin-top:6px; }
-    .field-error.visible { display:block; }
-    .alert { display:none; margin-bottom:16px; padding:10px 12px; border-radius:10px; font-size:13px; line-height:1.45; }
-    .alert.visible { display:block; }
-    .alert-error { background:rgba(232,86,106,.12); border:1px solid rgba(232,86,106,.25); color:#f48fb1; }
-    button, .btn {
-      width:100%; border:0; border-radius:12px; padding:13px; font-size:15px; font-weight:700; cursor:pointer;
-      text-align:center; text-decoration:none; display:block;
+
+    input:focus { border-color: var(--orange); }
+
+    .toggle-btn {
+      position: absolute;
+      right: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 6px 8px;
+      border-radius: 8px;
+      cursor: pointer;
     }
-    .btn-primary { background:#f0f0f2; color:#000; }
-    .btn-secondary { background:var(--surface2); color:var(--muted); margin-top:10px; }
-    button:disabled { opacity:.45; cursor:not-allowed; }
-    .footer { margin-top:16px; font-size:12px; color:var(--muted2); text-align:center; }
-    .icon { font-size:38px; margin-bottom:14px; text-align:center; }
+
+    .toggle-btn:hover { color: var(--text); }
+
+    .field-error {
+      display: none;
+      color: var(--red);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .field-error.visible { display: block; }
+
+    .cta, .btn-secondary {
+      width: 100%;
+      display: block;
+      border: 0;
+      border-radius: var(--radius);
+      font-family: 'Figtree', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity .15s, transform .15s;
+    }
+
+    .cta {
+      background: #ffffff;
+      color: #000000;
+      padding: 15px;
+      margin-top: 6px;
+    }
+
+    .cta:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--muted);
+      padding: 14px;
+      margin-top: 10px;
+    }
+
+    .cta:active, .btn-secondary:active { transform: scale(.98); }
+
+    .icon {
+      font-size: 40px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .footer {
+      margin-top: 26px;
+      font-size: 12px;
+      color: var(--muted2);
+      text-align: center;
+      animation: fade-up 0.45s 0.6s both;
+    }
+
+    @keyframes pop {
+      from { opacity: 0; transform: scale(0.55); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div id="view-form" class="view">
-      <h1>Set new password</h1>
-      <p class="subtitle">Choose a strong password for your account.</p>
-
-      <div id="alert-error" class="alert alert-error"></div>
-
-      <form id="reset-form" novalidate>
-        <div class="field">
-          <label for="password">New Password</label>
-          <input id="password" type="password" autocomplete="new-password" placeholder="Minimum 8 characters" required />
-          <p id="password-error" class="field-error"></p>
-        </div>
-
-        <div class="field">
-          <label for="confirm">Confirm Password</label>
-          <input id="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your password" required />
-          <p id="confirm-error" class="field-error"></p>
-        </div>
-
-        <button id="btn-submit" type="submit" class="btn-primary" disabled>Update Password</button>
-      </form>
-    </div>
-
-    <div id="view-invalid" class="view">
-      <div id="invalid-icon" class="icon">🔗</div>
-      <h1 id="invalid-title">Link unavailable</h1>
-      <p id="invalid-body" class="subtitle">This password reset link is invalid, expired, or already used. Please request a new one.</p>
-      <a href="https://www.amaliticz.com" class="btn btn-secondary">Back to Website</a>
-    </div>
-
-    <div id="view-success" class="view">
-      <div class="icon">✅</div>
-      <h1>Password updated</h1>
-      <p class="subtitle">Your password has been changed successfully. Return to the app to log in.</p>
-      <a href="amaliticz://" class="btn btn-primary">Open AmaliticZ App</a>
-      <a href="https://www.amaliticz.com" class="btn btn-secondary">Back to Website</a>
-    </div>
-  </div>
-
-  <p class="footer">© 2025 AmaliticZ</p>
-
-  <script>
-    const SUPABASE_URL = "__SUPABASE_URL__";
-    const SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
-
-    const { createClient } = supabase;
-    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    const viewForm = document.getElementById("view-form");
-    const viewInvalid = document.getElementById("view-invalid");
-    const viewSuccess = document.getElementById("view-success");
-    const form = document.getElementById("reset-form");
-    const pwInput = document.getElementById("password");
-    const cfInput = document.getElementById("confirm");
-    const btnSubmit = document.getElementById("btn-submit");
-    const alertError = document.getElementById("alert-error");
-    const pwError = document.getElementById("password-error");
-    const cfError = document.getElementById("confirm-error");
-
-    function showView(id) {
-      [viewForm, viewInvalid, viewSuccess].forEach(v => v.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-    }
-
-    function showInvalid(title, body, icon = "🔗") {
-      document.getElementById("invalid-icon").textContent = icon;
-      document.getElementById("invalid-title").textContent = title;
-      document.getElementById("invalid-body").textContent = body;
-      showView("view-invalid");
-    }
-
-    function showAlert(msg) {
-      alertError.textContent = msg;
-      alertError.classList.add("visible");
-    }
-
-    function clearAlert() {
-      alertError.textContent = "";
-      alertError.classList.remove("visible");
-    }
-
-    function setFieldError(el, msgEl, msg) {
-      el.style.borderColor = "var(--red)";
-      msgEl.textContent = msg;
-      msgEl.classList.add("visible");
-    }
-
-    function clearFieldError(el, msgEl) {
-      el.style.borderColor = "";
-      msgEl.textContent = "";
-      msgEl.classList.remove("visible");
-    }
-
-    function cleanupUrl() {
-      history.replaceState(null, "", window.location.pathname);
-    }
-
-    function validateInputs() {
-      const ready = pwInput.value.length > 0 && cfInput.value.length > 0;
-      btnSubmit.disabled = !ready;
-    }
-
-    pwInput.addEventListener("input", () => {
-      clearFieldError(pwInput, pwError);
-      clearAlert();
-      validateInputs();
-      if (cfInput.value && cfInput.value !== pwInput.value) {
-        setFieldError(cfInput, cfError, "Passwords do not match.");
-      } else {
-        clearFieldError(cfInput, cfError);
-      }
-    });
-
-    cfInput.addEventListener("input", () => {
-      clearFieldError(cfInput, cfError);
-      clearAlert();
-      validateInputs();
-    });
-
-    async function initRecoverySession() {
-      const url = new URL(window.location.href);
-      const params = url.searchParams;
-
-      const errorCode = params.get("error_code");
-      const errorDesc = params.get("error_description");
-
-      if (errorCode === "otp_expired" || (errorDesc && errorDesc.toLowerCase().includes("expired"))) {
-        showInvalid("Link expired", "This password reset link has expired. Please request a new one.", "⏱️");
-        return false;
-      }
-
-      if (errorCode === "access_denied" || params.get("error")) {
-        showInvalid("Link unavailable", "This reset link was already used or is invalid. Request a new one from the app.", "🚫");
-        return false;
-      }
-
-      const tokenHash = params.get("token_hash");
-      const type = params.get("type");
-
-      if (tokenHash && type === "recovery") {
-        const { error } = await sb.auth.verifyOtp({ type: "recovery", token_hash: tokenHash });
-        if (error) return false;
-        cleanupUrl();
-        return true;
-      }
-
-      const token = params.get("token");
-      if (token && type === "recovery") {
-        const { error } = await sb.auth.verifyOtp({ type: "recovery", token_hash: token });
-        if (!error) {
-          cleanupUrl();
-          return true;
-        }
-      }
-
-      const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
-      if (hash) {
-        const hp = {};
-        hash.split("&").forEach(pair => {
-          const [k, v] = pair.split("=");
-          if (k) hp[decodeURIComponent(k)] = decodeURIComponent(v || "");
-        });
-
-        if (hp.access_token && hp.refresh_token && hp.type === "recovery") {
-          const { error } = await sb.auth.setSession({
-            access_token: hp.access_token,
-            refresh_token: hp.refresh_token
-          });
-          if (error) return false;
-          cleanupUrl();
-          return true;
-        }
-      }
-
-      const { data: { session } } = await sb.auth.getSession();
-      return !!session;
-    }
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      clearAlert();
-      clearFieldError(pwInput, pwError);
-      clearFieldError(cfInput, cfError);
-
-      const pw = pwInput.value;
-      const cf = cfInput.value;
-
-      let ok = true;
-      if (pw.length < 8) {
-        setFieldError(pwInput, pwError, "Password must be at least 8 characters.");
-        ok = false;
-      }
-      if (pw !== cf) {
-        setFieldError(cfInput, cfError, "Passwords do not match.");
-        ok = false;
-      }
-      if (!ok) return;
-
-      btnSubmit.disabled = true;
-      const { error } = await sb.auth.updateUser({ password: pw });
-
-      if (error) {
-        btnSubmit.disabled = false;
-        showAlert("Could not update password. Please request a new reset link and try again.");
-        return;
-      }
-
-      await sb.auth.signOut();
-      showView("view-success");
-    });
-
-    (async () => {
-      if (!SUPABASE_URL.includes("supabase.co") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("__")) {
-        showInvalid("Configuration missing", "Reset page is not configured yet. Contact support.", "⚙️");
-        return;
-      }
-
-      const ready = await initRecoverySession();
-      if (ready) {
-        showView("view-form");
-      } else {
-        showInvalid("Link unavailable", "This password reset link is invalid, expired, or already used. Please request a new one.", "🚫");
-      }
-    })();
-  </script>
-</body>
-</html>
+  <div class="wrap">
+    <div class="donut-wrap">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#1c1c1e" stroke-width="13"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f4883a" stroke-width="13" stroke-dashoffset="0"    style="--len:44"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#7ec8e3" stroke-width="13" stroke-dashoffset="-46"  style="--len:32"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#e8566a" stroke-width="13" stroke-dashoffset="-80"  style="--len:23"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#7ed8c0" stroke-width="13" stroke-dashoffset="-105" style="--len:27"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#4ecdc4" stroke-width="13" stroke-dashoffset="-134" style="--len:22"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#5ab4f5" stroke-width="13" stroke-dashoffset="-158" style="--len
