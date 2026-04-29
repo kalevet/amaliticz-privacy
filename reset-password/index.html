@@ -1,189 +1,275 @@
-<script>
-  // These placeholders are replaced by GitHub Actions using repository secrets.
-  const SUPABASE_URL = "__SUPABASE_URL__";
-  const SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
-
-  const { createClient } = supabase;
-  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  const viewForm = document.getElementById("view-form");
-  const viewInvalid = document.getElementById("view-invalid");
-  const viewSuccess = document.getElementById("view-success");
-  const form = document.getElementById("reset-form");
-  const pwInput = document.getElementById("password");
-  const cfInput = document.getElementById("confirm");
-  const btnSubmit = document.getElementById("btn-submit");
-  const alertError = document.getElementById("alert-error");
-  const pwError = document.getElementById("password-error");
-  const cfError = document.getElementById("confirm-error");
-
-  function showView(id) {
-    [viewForm, viewInvalid, viewSuccess].forEach(v => v.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-  }
-
-  function showInvalid(title, body, icon = "🔗") {
-    document.getElementById("invalid-icon").textContent = icon;
-    document.getElementById("invalid-title").textContent = title;
-    document.getElementById("invalid-body").textContent = body;
-    showView("view-invalid");
-  }
-
-  function showAlert(msg) {
-    alertError.textContent = msg;
-    alertError.classList.add("visible");
-  }
-
-  function clearAlert() {
-    alertError.textContent = "";
-    alertError.classList.remove("visible");
-  }
-
-  function setFieldError(el, msgEl, msg) {
-    el.style.borderColor = "var(--red)";
-    msgEl.textContent = msg;
-    msgEl.classList.add("visible");
-  }
-
-  function clearFieldError(el, msgEl) {
-    el.style.borderColor = "";
-    msgEl.textContent = "";
-    msgEl.classList.remove("visible");
-  }
-
-  function cleanupUrl() {
-    history.replaceState(null, "", window.location.pathname);
-  }
-
-  function validateInputs() {
-    const ready = pwInput.value.length > 0 && cfInput.value.length > 0;
-    btnSubmit.disabled = !ready;
-  }
-
-  pwInput.addEventListener("input", () => {
-    clearFieldError(pwInput, pwError);
-    clearAlert();
-    validateInputs();
-    if (cfInput.value && cfInput.value !== pwInput.value) {
-      setFieldError(cfInput, cfError, "Passwords do not match.");
-    } else {
-      clearFieldError(cfInput, cfError);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Reset Password - AmaliticZ</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#000; --surface:#1c1c1e; --surface2:#2c2c2e; --border:rgba(255,255,255,.08);
+      --text:#f0f0f2; --muted:#8e8e93; --muted2:#48484a; --red:#e8566a;
     }
-  });
+    html, body {
+      min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; padding:20px;
+    }
+    .card { width:100%; max-width:420px; background:var(--surface); border-radius:16px; padding:28px; }
+    h1 { font-size:22px; margin-bottom:8px; }
+    .subtitle { color:var(--muted); font-size:14px; margin-bottom:20px; line-height:1.45; }
+    .view { display:none; }
+    .view.active { display:block; }
+    label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.06em; }
+    .field { margin-bottom:14px; }
+    input {
+      width:100%; background:var(--surface2); border:1px solid var(--border); color:var(--text);
+      border-radius:10px; padding:12px; font-size:15px; outline:none;
+    }
+    input:focus { border-color:#888; }
+    .field-error { display:none; color:var(--red); font-size:12px; margin-top:6px; }
+    .field-error.visible { display:block; }
+    .alert { display:none; margin-bottom:16px; padding:10px 12px; border-radius:10px; font-size:13px; line-height:1.45; }
+    .alert.visible { display:block; }
+    .alert-error { background:rgba(232,86,106,.12); border:1px solid rgba(232,86,106,.25); color:#f48fb1; }
+    button, .btn {
+      width:100%; border:0; border-radius:12px; padding:13px; font-size:15px; font-weight:700; cursor:pointer;
+      text-align:center; text-decoration:none; display:block;
+    }
+    .btn-primary { background:#f0f0f2; color:#000; }
+    .btn-secondary { background:var(--surface2); color:var(--muted); margin-top:10px; }
+    button:disabled { opacity:.45; cursor:not-allowed; }
+    .footer { margin-top:16px; font-size:12px; color:var(--muted2); text-align:center; }
+    .icon { font-size:38px; margin-bottom:14px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="view-form" class="view">
+      <h1>Set new password</h1>
+      <p class="subtitle">Choose a strong password for your account.</p>
 
-  cfInput.addEventListener("input", () => {
-    clearFieldError(cfInput, cfError);
-    clearAlert();
-    validateInputs();
-  });
+      <div id="alert-error" class="alert alert-error"></div>
 
-  async function initRecoverySession() {
-    const url = new URL(window.location.href);
-    const params = url.searchParams;
+      <form id="reset-form" novalidate>
+        <div class="field">
+          <label for="password">New Password</label>
+          <input id="password" type="password" autocomplete="new-password" placeholder="Minimum 8 characters" required />
+          <p id="password-error" class="field-error"></p>
+        </div>
 
-    const errorCode = params.get("error_code");
-    const errorDesc = params.get("error_description");
+        <div class="field">
+          <label for="confirm">Confirm Password</label>
+          <input id="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your password" required />
+          <p id="confirm-error" class="field-error"></p>
+        </div>
 
-    if (errorCode === "otp_expired" || (errorDesc && errorDesc.toLowerCase().includes("expired"))) {
-      showInvalid("Link expired", "This password reset link has expired. Please request a new one.", "⏱️");
-      return false;
+        <button id="btn-submit" type="submit" class="btn-primary" disabled>Update Password</button>
+      </form>
+    </div>
+
+    <div id="view-invalid" class="view">
+      <div id="invalid-icon" class="icon">🔗</div>
+      <h1 id="invalid-title">Link unavailable</h1>
+      <p id="invalid-body" class="subtitle">This password reset link is invalid, expired, or already used. Please request a new one.</p>
+      <a href="https://www.amaliticz.com" class="btn btn-secondary">Back to Website</a>
+    </div>
+
+    <div id="view-success" class="view">
+      <div class="icon">✅</div>
+      <h1>Password updated</h1>
+      <p class="subtitle">Your password has been changed successfully. Return to the app to log in.</p>
+      <a href="amaliticz://" class="btn btn-primary">Open AmaliticZ App</a>
+      <a href="https://www.amaliticz.com" class="btn btn-secondary">Back to Website</a>
+    </div>
+  </div>
+
+  <p class="footer">© 2025 AmaliticZ</p>
+
+  <script>
+    const SUPABASE_URL = "__SUPABASE_URL__";
+    const SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
+
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const viewForm = document.getElementById("view-form");
+    const viewInvalid = document.getElementById("view-invalid");
+    const viewSuccess = document.getElementById("view-success");
+    const form = document.getElementById("reset-form");
+    const pwInput = document.getElementById("password");
+    const cfInput = document.getElementById("confirm");
+    const btnSubmit = document.getElementById("btn-submit");
+    const alertError = document.getElementById("alert-error");
+    const pwError = document.getElementById("password-error");
+    const cfError = document.getElementById("confirm-error");
+
+    function showView(id) {
+      [viewForm, viewInvalid, viewSuccess].forEach(v => v.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
     }
 
-    if (errorCode === "access_denied" || params.get("error")) {
-      showInvalid("Link unavailable", "This reset link was already used or is invalid. Request a new one from the app.", "🚫");
-      return false;
+    function showInvalid(title, body, icon = "🔗") {
+      document.getElementById("invalid-icon").textContent = icon;
+      document.getElementById("invalid-title").textContent = title;
+      document.getElementById("invalid-body").textContent = body;
+      showView("view-invalid");
     }
 
-    // Primary flow: token_hash from email template
-    const tokenHash = params.get("token_hash");
-    const type = params.get("type");
-
-    if (tokenHash && type === "recovery") {
-      const { error } = await sb.auth.verifyOtp({ type: "recovery", token_hash: tokenHash });
-      if (error) return false;
-      cleanupUrl();
-      return true;
+    function showAlert(msg) {
+      alertError.textContent = msg;
+      alertError.classList.add("visible");
     }
 
-    // Optional compatibility: if token provided instead of token_hash
-    const token = params.get("token");
-    if (token && type === "recovery") {
-      const { error } = await sb.auth.verifyOtp({ type: "recovery", token_hash: token });
-      if (!error) {
-        cleanupUrl();
-        return true;
+    function clearAlert() {
+      alertError.textContent = "";
+      alertError.classList.remove("visible");
+    }
+
+    function setFieldError(el, msgEl, msg) {
+      el.style.borderColor = "var(--red)";
+      msgEl.textContent = msg;
+      msgEl.classList.add("visible");
+    }
+
+    function clearFieldError(el, msgEl) {
+      el.style.borderColor = "";
+      msgEl.textContent = "";
+      msgEl.classList.remove("visible");
+    }
+
+    function cleanupUrl() {
+      history.replaceState(null, "", window.location.pathname);
+    }
+
+    function validateInputs() {
+      const ready = pwInput.value.length > 0 && cfInput.value.length > 0;
+      btnSubmit.disabled = !ready;
+    }
+
+    pwInput.addEventListener("input", () => {
+      clearFieldError(pwInput, pwError);
+      clearAlert();
+      validateInputs();
+      if (cfInput.value && cfInput.value !== pwInput.value) {
+        setFieldError(cfInput, cfError, "Passwords do not match.");
+      } else {
+        clearFieldError(cfInput, cfError);
       }
-    }
+    });
 
-    // Legacy implicit/hash flow fallback
-    const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
-    if (hash) {
-      const hp = {};
-      hash.split("&").forEach(pair => {
-        const [k, v] = pair.split("=");
-        if (k) hp[decodeURIComponent(k)] = decodeURIComponent(v || "");
-      });
+    cfInput.addEventListener("input", () => {
+      clearFieldError(cfInput, cfError);
+      clearAlert();
+      validateInputs();
+    });
 
-      if (hp.access_token && hp.refresh_token && hp.type === "recovery") {
-        const { error } = await sb.auth.setSession({
-          access_token: hp.access_token,
-          refresh_token: hp.refresh_token
-        });
+    async function initRecoverySession() {
+      const url = new URL(window.location.href);
+      const params = url.searchParams;
+
+      const errorCode = params.get("error_code");
+      const errorDesc = params.get("error_description");
+
+      if (errorCode === "otp_expired" || (errorDesc && errorDesc.toLowerCase().includes("expired"))) {
+        showInvalid("Link expired", "This password reset link has expired. Please request a new one.", "⏱️");
+        return false;
+      }
+
+      if (errorCode === "access_denied" || params.get("error")) {
+        showInvalid("Link unavailable", "This reset link was already used or is invalid. Request a new one from the app.", "🚫");
+        return false;
+      }
+
+      const tokenHash = params.get("token_hash");
+      const type = params.get("type");
+
+      if (tokenHash && type === "recovery") {
+        const { error } = await sb.auth.verifyOtp({ type: "recovery", token_hash: tokenHash });
         if (error) return false;
         cleanupUrl();
         return true;
       }
+
+      const token = params.get("token");
+      if (token && type === "recovery") {
+        const { error } = await sb.auth.verifyOtp({ type: "recovery", token_hash: token });
+        if (!error) {
+          cleanupUrl();
+          return true;
+        }
+      }
+
+      const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+      if (hash) {
+        const hp = {};
+        hash.split("&").forEach(pair => {
+          const [k, v] = pair.split("=");
+          if (k) hp[decodeURIComponent(k)] = decodeURIComponent(v || "");
+        });
+
+        if (hp.access_token && hp.refresh_token && hp.type === "recovery") {
+          const { error } = await sb.auth.setSession({
+            access_token: hp.access_token,
+            refresh_token: hp.refresh_token
+          });
+          if (error) return false;
+          cleanupUrl();
+          return true;
+        }
+      }
+
+      const { data: { session } } = await sb.auth.getSession();
+      return !!session;
     }
 
-    // Already has session
-    const { data: { session } } = await sb.auth.getSession();
-    return !!session;
-  }
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAlert();
+      clearFieldError(pwInput, pwError);
+      clearFieldError(cfInput, cfError);
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    clearAlert();
-    clearFieldError(pwInput, pwError);
-    clearFieldError(cfInput, cfError);
+      const pw = pwInput.value;
+      const cf = cfInput.value;
 
-    const pw = pwInput.value;
-    const cf = cfInput.value;
+      let ok = true;
+      if (pw.length < 8) {
+        setFieldError(pwInput, pwError, "Password must be at least 8 characters.");
+        ok = false;
+      }
+      if (pw !== cf) {
+        setFieldError(cfInput, cfError, "Passwords do not match.");
+        ok = false;
+      }
+      if (!ok) return;
 
-    let ok = true;
-    if (pw.length < 8) {
-      setFieldError(pwInput, pwError, "Password must be at least 8 characters.");
-      ok = false;
-    }
-    if (pw !== cf) {
-      setFieldError(cfInput, cfError, "Passwords do not match.");
-      ok = false;
-    }
-    if (!ok) return;
+      btnSubmit.disabled = true;
+      const { error } = await sb.auth.updateUser({ password: pw });
 
-    btnSubmit.disabled = true;
-    const { error } = await sb.auth.updateUser({ password: pw });
+      if (error) {
+        btnSubmit.disabled = false;
+        showAlert("Could not update password. Please request a new reset link and try again.");
+        return;
+      }
 
-    if (error) {
-      btnSubmit.disabled = false;
-      showAlert("Could not update password. Please request a new reset link and try again.");
-      return;
-    }
+      await sb.auth.signOut();
+      showView("view-success");
+    });
 
-    await sb.auth.signOut();
-    showView("view-success");
-  });
+    (async () => {
+      if (!SUPABASE_URL.includes("supabase.co") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("__")) {
+        showInvalid("Configuration missing", "Reset page is not configured yet. Contact support.", "⚙️");
+        return;
+      }
 
-  (async () => {
-    if (!SUPABASE_URL.includes("supabase.co") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("__")) {
-      showInvalid("Configuration missing", "Reset page is not configured yet. Contact support.", "⚙️");
-      return;
-    }
-
-    const ready = await initRecoverySession();
-    if (ready) {
-      showView("view-form");
-    } else {
-      showInvalid("Link unavailable", "This password reset link is invalid, expired, or already used. Please request a new one.", "🚫");
-    }
-  })();
-</script>
+      const ready = await initRecoverySession();
+      if (ready) {
+        showView("view-form");
+      } else {
+        showInvalid("Link unavailable", "This password reset link is invalid, expired, or already used. Please request a new one.", "🚫");
+      }
+    })();
+  </script>
+</body>
+</html>
