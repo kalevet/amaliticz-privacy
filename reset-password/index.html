@@ -52,7 +52,6 @@
       align-items: center;
     }
 
-    /* hero */
     .donut-wrap {
       position: relative;
       width: 196px;
@@ -147,9 +146,7 @@
       margin-bottom: 7px;
     }
 
-    .pw-wrap {
-      position: relative;
-    }
+    .pw-wrap { position: relative; }
 
     input {
       width: 100%;
@@ -240,6 +237,15 @@
       animation: fade-up 0.45s 0.6s both;
     }
 
+    .status-text {
+      margin-top: 8px;
+      margin-bottom: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      min-height: 20px;
+    }
+
     @keyframes pop {
       from { opacity: 0; transform: scale(0.55); }
       to   { opacity: 1; transform: scale(1); }
@@ -266,4 +272,309 @@
         <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#e8566a" stroke-width="13" stroke-dashoffset="-80"  style="--len:23"/>
         <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#7ed8c0" stroke-width="13" stroke-dashoffset="-105" style="--len:27"/>
         <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#4ecdc4" stroke-width="13" stroke-dashoffset="-134" style="--len:22"/>
-        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#5ab4f5" stroke-width="13" stroke-dashoffset="-158" style="--len
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#5ab4f5" stroke-width="13" stroke-dashoffset="-158" style="--len:22"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#c966cc" stroke-width="13" stroke-dashoffset="-182" style="--len:17"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f4c542" stroke-width="13" stroke-dashoffset="-201" style="--len:13"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f48fb1" stroke-width="13" stroke-dashoffset="-216" style="--len:14"/>
+        <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#e87a5a" stroke-width="13" stroke-dashoffset="-232" style="--len:5"/>
+      </svg>
+      <div class="donut-center">
+        <img class="logo" src="https://raw.githubusercontent.com/kalevet/amaliticz-privacy/main/Amaliticz_Icon.png" alt="AmaliticZ">
+      </div>
+    </div>
+
+    <p id="status-text" class="status-text">Verifying your reset link...</p>
+
+    <div id="view-form" class="view">
+      <h1>Set new password</h1>
+      <p class="sub">Choose a strong password for your AmaliticZ account.</p>
+
+      <div class="card">
+        <div id="alert-error" class="alert alert-error"></div>
+
+        <form id="reset-form" novalidate>
+          <div class="field">
+            <label for="password">New Password</label>
+            <div class="pw-wrap">
+              <input id="password" type="password" autocomplete="new-password" placeholder="Minimum 8 characters" required />
+              <button type="button" class="toggle-btn" data-target="password" aria-label="Show password">Show</button>
+            </div>
+            <p id="password-error" class="field-error"></p>
+          </div>
+
+          <div class="field">
+            <label for="confirm">Confirm Password</label>
+            <div class="pw-wrap">
+              <input id="confirm" type="password" autocomplete="new-password" placeholder="Re-enter your password" required />
+              <button type="button" class="toggle-btn" data-target="confirm" aria-label="Show password">Show</button>
+            </div>
+            <p id="confirm-error" class="field-error"></p>
+          </div>
+
+          <button id="btn-submit" type="submit" class="cta" disabled>Update Password</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="view-invalid" class="view">
+      <div class="card">
+        <div id="invalid-icon" class="icon">🚫</div>
+        <h1 id="invalid-title" style="font-size:28px;">Link unavailable</h1>
+        <p id="invalid-body" class="sub" style="margin-bottom:8px;">
+          This password reset link is invalid, expired, or already used. Please request a new one.
+        </p>
+        <a href="https://www.amaliticz.com" class="btn-secondary">Back to Website</a>
+      </div>
+    </div>
+
+    <div id="view-success" class="view">
+      <div class="card">
+        <div class="icon">✅</div>
+        <h1 style="font-size:28px;">Password updated</h1>
+        <p class="sub" style="margin-bottom:8px;">
+          Your password has been changed successfully. Return to the app to log in.
+        </p>
+        <a href="amaliticz://" class="cta">Open AmaliticZ App</a>
+        <a href="https://www.amaliticz.com" class="btn-secondary">Back to Website</a>
+      </div>
+    </div>
+
+    <p class="footer">© 2025 AmaliticZ. All rights reserved.</p>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "__SUPABASE_URL__";
+    const SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
+
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const viewForm = document.getElementById("view-form");
+    const viewInvalid = document.getElementById("view-invalid");
+    const viewSuccess = document.getElementById("view-success");
+    const form = document.getElementById("reset-form");
+    const pwInput = document.getElementById("password");
+    const cfInput = document.getElementById("confirm");
+    const btnSubmit = document.getElementById("btn-submit");
+    const alertError = document.getElementById("alert-error");
+    const pwError = document.getElementById("password-error");
+    const cfError = document.getElementById("confirm-error");
+    const statusText = document.getElementById("status-text");
+
+    function withTimeout(promise, ms, label) {
+      return Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error(label + " timed out")), ms))
+      ]);
+    }
+
+    function showView(id) {
+      [viewForm, viewInvalid, viewSuccess].forEach(v => v.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      if (statusText) statusText.style.display = "none";
+    }
+
+    function showInvalid(title, body, icon = "🔗") {
+      document.getElementById("invalid-icon").textContent = icon;
+      document.getElementById("invalid-title").textContent = title;
+      document.getElementById("invalid-body").textContent = body;
+      showView("view-invalid");
+    }
+
+    function showAlert(msg) {
+      alertError.textContent = msg;
+      alertError.classList.add("visible");
+    }
+
+    function clearAlert() {
+      alertError.textContent = "";
+      alertError.classList.remove("visible");
+    }
+
+    function setFieldError(el, msgEl, msg) {
+      el.style.borderColor = "var(--red)";
+      msgEl.textContent = msg;
+      msgEl.classList.add("visible");
+    }
+
+    function clearFieldError(el, msgEl) {
+      el.style.borderColor = "";
+      msgEl.textContent = "";
+      msgEl.classList.remove("visible");
+    }
+
+    function cleanupUrl() {
+      history.replaceState(null, "", window.location.pathname);
+    }
+
+    function validateInputs() {
+      btnSubmit.disabled = !(pwInput.value.length > 0 && cfInput.value.length > 0);
+    }
+
+    function initPasswordToggleButtons() {
+      document.querySelectorAll(".toggle-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const targetId = btn.getAttribute("data-target");
+          const input = document.getElementById(targetId);
+          const isHidden = input.type === "password";
+          input.type = isHidden ? "text" : "password";
+          btn.textContent = isHidden ? "Hide" : "Show";
+          btn.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+        });
+      });
+    }
+
+    pwInput.addEventListener("input", () => {
+      clearFieldError(pwInput, pwError);
+      clearAlert();
+      validateInputs();
+      if (cfInput.value && cfInput.value !== pwInput.value) {
+        setFieldError(cfInput, cfError, "Passwords do not match.");
+      } else {
+        clearFieldError(cfInput, cfError);
+      }
+    });
+
+    cfInput.addEventListener("input", () => {
+      clearFieldError(cfInput, cfError);
+      clearAlert();
+      validateInputs();
+    });
+
+    async function initRecoverySession() {
+      try {
+        const url = new URL(window.location.href);
+        const params = url.searchParams;
+
+        const errorCode = params.get("error_code");
+        const errorDesc = params.get("error_description");
+
+        if (errorCode === "otp_expired" || (errorDesc && errorDesc.toLowerCase().includes("expired"))) {
+          showInvalid("Link expired", "This password reset link has expired. Please request a new one.", "⏱️");
+          return false;
+        }
+
+        if (errorCode === "access_denied" || params.get("error")) {
+          showInvalid("Link unavailable", "This reset link was already used or is invalid. Request a new one from the app.", "🚫");
+          return false;
+        }
+
+        const tokenHash = params.get("token_hash");
+        const type = params.get("type");
+
+        if (tokenHash && type === "recovery") {
+          const { error } = await withTimeout(
+            sb.auth.verifyOtp({ type: "recovery", token_hash: tokenHash }),
+            12000,
+            "verifyOtp(token_hash)"
+          );
+          if (error) return false;
+          cleanupUrl();
+          return true;
+        }
+
+        const token = params.get("token");
+        if (token && type === "recovery") {
+          const { error } = await withTimeout(
+            sb.auth.verifyOtp({ type: "recovery", token_hash: token }),
+            12000,
+            "verifyOtp(token)"
+          );
+          if (!error) {
+            cleanupUrl();
+            return true;
+          }
+        }
+
+        const hash = window.location.hash.startsWith("#") ? window.location.hash.slice(1) : "";
+        if (hash) {
+          const hp = {};
+          hash.split("&").forEach(pair => {
+            const [k, v] = pair.split("=");
+            if (k) hp[decodeURIComponent(k)] = decodeURIComponent(v || "");
+          });
+
+          if (hp.access_token && hp.refresh_token && hp.type === "recovery") {
+            const { error } = await withTimeout(
+              sb.auth.setSession({
+                access_token: hp.access_token,
+                refresh_token: hp.refresh_token
+              }),
+              12000,
+              "setSession"
+            );
+            if (error) return false;
+            cleanupUrl();
+            return true;
+          }
+        }
+
+        const { data: { session } } = await withTimeout(
+          sb.auth.getSession(),
+          8000,
+          "getSession"
+        );
+
+        return !!session;
+      } catch (err) {
+        console.error("[RESET] initRecoverySession error:", err);
+        return false;
+      }
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAlert();
+      clearFieldError(pwInput, pwError);
+      clearFieldError(cfInput, cfError);
+
+      const pw = pwInput.value;
+      const cf = cfInput.value;
+
+      let ok = true;
+      if (pw.length < 8) {
+        setFieldError(pwInput, pwError, "Password must be at least 8 characters.");
+        ok = false;
+      }
+      if (pw !== cf) {
+        setFieldError(cfInput, cfError, "Passwords do not match.");
+        ok = false;
+      }
+      if (!ok) return;
+
+      btnSubmit.disabled = true;
+      const { error } = await sb.auth.updateUser({ password: pw });
+
+      if (error) {
+        btnSubmit.disabled = false;
+        showAlert("Could not update password. Please request a new reset link and try again.");
+        return;
+      }
+
+      await sb.auth.signOut();
+      showView("view-success");
+    });
+
+    (async () => {
+      try {
+        initPasswordToggleButtons();
+
+        if (!SUPABASE_URL.includes("supabase.co") || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("__")) {
+          showInvalid("Configuration missing", "Reset page is not configured yet. Contact support.", "⚙️");
+          return;
+        }
+
+        const ready = await initRecoverySession();
+        if (ready) {
+          showView("view-form");
+        } else {
+          showInvalid("Link unavailable", "This password reset link is invalid, expired, already used, or timed out. Please request a new one.", "🚫");
+        }
+      } catch (e) {
+        console.error("[RESET] bootstrap fatal:", e);
+        showInvalid("Something went wrong", "Please request a new reset link and try again.", "⚠️");
+      }
+    })();
+  </script>
+</body>
+</html>
