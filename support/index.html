@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Support - AmaliticZ</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000000;
+      --surface: #1c1c1e;
+      --surface2: #2c2c2e;
+      --text: #ffffff;
+      --muted: #8e8e93;
+      --muted2: #48484a;
+      --orange:  #f4883a;
+      --blue:    #5ab4f5;
+      --teal:    #4ecdc4;
+      --pink:    #f48fb1;
+      --red:     #e8566a;
+      --border: rgba(255,255,255,0.08);
+      --radius: 18px;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Figtree", sans-serif;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 18px;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .donut-wrap {
+      position: relative;
+      width: 170px;
+      height: 170px;
+      margin-bottom: 18px;
+    }
+
+    .donut-wrap svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
+    }
+
+    .donut-center {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+    }
+
+    h1 {
+      font-size: 30px;
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .sub {
+      font-size: 15px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      width: 100%;
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .alert {
+      display: none;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .alert.visible { display: block; }
+    .alert-error {
+      background: rgba(232,86,106,.12);
+      border: 1px solid rgba(232,86,106,.25);
+      color: #f8b7c8;
+    }
+    .alert-success {
+      background: rgba(78,205,196,.12);
+      border: 1px solid rgba(78,205,196,.25);
+      color: #93efe5;
+    }
+
+    .field { margin-bottom: 12px; }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 15px;
+      font-family: "Figtree", sans-serif;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--orange);
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 5px;
+    }
+
+    .btn {
+      width: 100%;
+      border: 0;
+      border-radius: var(--radius);
+      padding: 15px;
+      font-family: "Figtree", sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s, transform .15s;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: #000;
+      margin-top: 6px;
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--muted2);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="donut-wrap">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#1c1c1e" stroke-width="13"/>
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#f4883a" stroke-width="13" stroke-dasharray="42 1000" stroke-dashoffset="0"/>
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#5ab4f5" stroke-width="13" stroke-dasharray="28 1000" stroke-dashoffset="-44"/>
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#f48fb1" stroke-width="13" stroke-dasharray="18 1000" stroke-dashoffset="-74"/>
+        <circle cx="50" cy="50" r="38" fill="none" stroke="#4ecdc4" stroke-width="13" stroke-dasharray="26 1000" stroke-dashoffset="-94"/>
+      </svg>
+      <div class="donut-center">
+        <img class="logo" src="https://raw.githubusercontent.com/kalevet/amaliticz-privacy/main/Amaliticz_Icon.png" alt="AmaliticZ">
+      </div>
+    </div>
+
+    <h1>Support Intake</h1>
+    <p class="sub">Tell us what happened and we will email you back as soon as possible.</p>
+
+    <div class="card">
+      <div id="error" class="alert alert-error"></div>
+      <div id="success" class="alert alert-success"></div>
+
+      <!-- FormSubmit endpoint -->
+      <form id="support-form" action="https://formsubmit.co/support@amaliticz.com" method="POST">
+        <!-- FormSubmit controls -->
+        <input type="hidden" name="_subject" value="AmaliticZ Support Intake" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="true" />
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+
+        <div class="field">
+          <label for="name">Full Name</label>
+          <input id="name" name="name" type="text" required maxlength="120" />
+        </div>
+
+        <div class="field">
+          <label for="email">Reply Email</label>
+          <input id="email" name="email" type="email" required maxlength="160" />
+        </div>
+
+        <div class="field">
+          <label for="category">Issue Type</label>
+          <select id="category" name="category" required>
+            <option value="">Select one...</option>
+            <option>Login / Account Access</option>
+            <option>Password Reset</option>
+            <option>Billing / Subscription</option>
+            <option>Bug / App Issue</option>
+            <option>Feature Request</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="priority">Priority</label>
+          <select id="priority" name="priority" required>
+            <option value="">Select one...</option>
+            <option>Low</option>
+            <option>Medium</option>
+            <option>High</option>
+            <option>Urgent</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="message">What happened?</label>
+          <textarea id="message" name="message" required maxlength="4000" placeholder="Describe the issue, what you expected, what happened, and any error messages."></textarea>
+          <p class="hint">Include device, iOS/Android version, and app version if possible.</p>
+        </div>
+
+        <button id="submit-btn" class="btn btn-primary" type="submit">Send to Support</button>
+      </form>
+
+      <a class="btn btn-secondary" href="https://www.amaliticz.com">Back to Website</a>
+    </div>
+
+    <p class="footer">© 2025 AmaliticZ. All rights reserved.</p>
+  </div>
+
+  <script>
+    const form = document.getElementById("support-form");
+    const submitBtn = document.getElementById("submit-btn");
+    const errorEl = document.getElementById("error");
+    const successEl = document.getElementById("success");
+
+    function setError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.add("visible");
+      successEl.classList.remove("visible");
+    }
+
+    function setSuccess(msg) {
+      successEl.textContent = msg;
+      successEl.classList.add("visible");
+      errorEl.classList.remove("visible");
+    }
+
+    function clearAlerts() {
+      errorEl.classList.remove("visible");
+      successEl.classList.remove("visible");
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      clearAlerts();
+
+      const data = new FormData(form);
+      if (!data.get("name") || !data.get("email") || !data.get("category") || !data.get("priority") || !data.get("message")) {
+        setError("Please fill in all required fields.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending...";
+
+      try {
+        const res = await fetch(form.action, {
+          method: "POST",
+          body: data,
+          headers: { "Accept": "application/json" }
+        });
+
+        if (!res.ok) {
+          throw new Error("Failed to submit support request.");
+        }
+
+        form.reset();
+        setSuccess("Thanks. Your support request was sent to support@amaliticz.com.");
+      } catch (err) {
+        setError("Could not send right now. Please try again in a moment.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Send to Support";
+      }
+    });
+  </script>
+</body>
+</html>
