@@ -13,7 +13,7 @@ Static site for [amaliticz.com](https://www.amaliticz.com). Plain HTML and CSS. 
 | `/reset-password/` | `reset-password/index.html` | Password reset (Supabase) |
 | `/verified/` | `verified/index.html` | Email-verified landing page |
 
-Shared styles live in `assets/site.css`. The homepage phone frame uses `assets/app-screenshot.png`, which is a labeled stand-in until a real app screenshot replaces it.
+Shared styles live in `assets/site.css`. The homepage phone frame uses `assets/app-screenshot.png` until a real app screenshot replaces it.
 
 ## Deploy
 

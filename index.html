@@ -86,40 +86,15 @@
     }
 
     .product-visual {
-      margin-top: 64px;
+      margin-top: 48px;
       display: flex;
-      align-items: center;
       justify-content: center;
-      gap: 56px;
       position: relative;
       z-index: 1;
     }
 
-    .hero-donut { position: relative; }
-    .donut-container {
-      position: relative;
-      width: clamp(220px, 32vw, 320px);
-      height: clamp(220px, 32vw, 320px);
-      margin: 0 auto;
-    }
-    .donut-container svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-    .donut-inner {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .donut-inner img {
-      width: clamp(60px, 10vw, 88px);
-      height: clamp(60px, 10vw, 88px);
-      border-radius: clamp(14px, 3vw, 22px);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 8px 32px rgba(0,0,0,0.5);
-    }
-
-    .phone-col { display: flex; flex-direction: column; align-items: center; }
     .phone {
-      width: min(280px, 78vw);
+      width: min(300px, 78vw);
       padding: 12px;
       border-radius: 40px;
       background: linear-gradient(165deg, #2c2c32, #0c0c0e 42%, #1a1a1e);
@@ -132,14 +107,6 @@
       line-height: 0;
     }
     .phone-screen img { width: 100%; height: auto; display: block; }
-    .phone-caption {
-      margin-top: 12px;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--orange);
-    }
 
     .color-bar { height: 6px; display: flex; width: 100%; overflow: hidden; position: relative; z-index: 1; }
     .color-bar span { flex: 1; transform-origin: left center; }
@@ -314,7 +281,6 @@
     }
 
     @media (max-width: 800px) {
-      .product-visual { flex-direction: column; gap: 36px; }
       .how-grid { grid-template-columns: 1fr; }
       .how-card { border-radius: 0 !important; }
       .how-card:first-child { border-radius: 18px 18px 0 0 !important; }
@@ -393,33 +359,10 @@
   </div>
 
   <div class="product-visual">
-    <div class="hero-donut">
-      <div class="donut-container">
-        <svg viewBox="0 0 100 100" aria-hidden="true">
-          <circle cx="50" cy="50" r="38" fill="none" stroke="#111115" stroke-width="13"/>
-          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f4883a" stroke-width="13" stroke-dashoffset="0" style="--len:44"/>
-          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#7ec8e3" stroke-width="13" stroke-dashoffset="-46" style="--len:32"/>
-          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#e8566a" stroke-width="13" stroke-dashoffset="-80" style="--len:23"/>
-          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#7ed8c0" stroke-width="13" stroke-dashoffset="-105" style="--len:27"/>
-          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#4ecdc4" stroke-width="13" stroke-dashoffset="-134" style="--len:22"/>
-          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#5ab4f5" stroke-width="13" stroke-dashoffset="-158" style="--len:22"/>
-          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#c966cc" stroke-width="13" stroke-dashoffset="-182" style="--len:17"/>
-          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f4c542" stroke-width="13" stroke-dashoffset="-201" style="--len:13"/>
-          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f48fb1" stroke-width="13" stroke-dashoffset="-216" style="--len:14"/>
-          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#e87a5a" stroke-width="13" stroke-dashoffset="-232" style="--len:5"/>
-        </svg>
-        <div class="donut-inner">
-          <img src="Amaliticz_Icon.png" width="88" height="88" alt="AmaliticZ">
-        </div>
+    <div class="phone">
+      <div class="phone-screen">
+        <img src="assets/app-screenshot.png" width="780" height="1688" alt="AmaliticZ spending breakdown">
       </div>
-    </div>
-    <div class="phone-col">
-      <div class="phone">
-        <div class="phone-screen">
-          <img src="assets/app-screenshot.png" width="780" height="1688" alt="Stand-in preview of an AmaliticZ spending screen. Not a screenshot of the app.">
-        </div>
-      </div>
-      <p class="phone-caption">Stand-in preview</p>
     </div>
   </div>
 </section>
