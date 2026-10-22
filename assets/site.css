@@ -137,62 +137,33 @@ a { color: var(--sky); }
 .nav-cta:hover { opacity: 0.85; }
 .nav-cta:visited { color: var(--bg); }
 
-/* ── STORE BUTTONS ── */
+/* ── STORE BADGES ── */
 .store-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .store-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--text);
-  color: var(--bg);
+  display: inline-block;
+  background: transparent;
+  color: #000;
   text-decoration: none;
-  padding: 12px 18px;
+  padding: 0;
   border-radius: 14px;
-  font-weight: 500;
-  line-height: 1.15;
-  position: relative;
-  transition: transform 0.2s, opacity 0.2s;
+  line-height: 0;
+  transition: transform 0.2s;
 }
 
-.store-btn:visited { color: var(--bg); }
-.store-btn:hover { transform: translateY(-2px); opacity: 0.92; }
-.store-btn svg { flex-shrink: 0; display: block; }
-.store-btn .btn-text { text-align: left; }
-.store-btn .btn-text small {
-  display: block;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.62;
-}
-.store-btn .btn-text strong {
-  display: block;
-  font-size: 16px;
-  font-weight: 600;
-  font-family: "DM Sans", sans-serif;
-  letter-spacing: 0;
-}
+.store-btn:visited { color: #000; }
+.store-btn:hover { transform: translateY(-2px); }
 
-.soon-tag {
-  background: var(--orange);
-  color: #1a0d05;
-  font-family: "DM Sans", sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-radius: 999px;
-  padding: 4px 7px;
-  line-height: 1;
-  white-space: nowrap;
+.store-btn svg {
+  width: 210px;
+  height: auto;
+  display: block;
 }
 
 /* ── FOOTER ── */

@@ -36,7 +36,7 @@ App Store (live):
 
 `https://apps.apple.com/us/app/amaliticz-purchase-insights/id6749656484`
 
-Android placeholder, labeled "Coming soon". The same URL is used everywhere an Android link appears (homepage buttons and `verified/index.html` `AND_URL`):
+Android placeholder. The same URL is used everywhere an Android link appears (homepage Google Play badge and `verified/index.html` `AND_URL`):
 
 `https://play.google.com/store/apps/details?id=com.amaliticz.app`
 

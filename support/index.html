@@ -24,50 +24,29 @@
 
     .donut-wrap {
       position: relative;
-      width: 170px;
-      height: 170px;
+      width: 196px;
+      height: 196px;
       margin-bottom: 18px;
+    }
+
+    .donut-wrap svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .donut-center {
+      position: absolute;
+      inset: 0;
       display: grid;
       place-items: center;
     }
 
-    .donut {
-      width: 170px;
-      height: 170px;
-      border-radius: 50%;
-      background:
-        conic-gradient(
-          #f4883a 0deg 72deg,
-          #111218 72deg 86deg,
-          #5ab4f5 86deg 132deg,
-          #111218 132deg 145deg,
-          #f48fb1 145deg 177deg,
-          #111218 177deg 191deg,
-          #4ecdc4 191deg 244deg,
-          #111218 244deg 258deg,
-          #7ed8c0 258deg 304deg,
-          #111218 304deg 318deg,
-          #2c2c2e 318deg 360deg
-        );
-      position: relative;
-    }
-
-    .donut::after {
-      content: "";
-      position: absolute;
-      inset: 23px;
-      border-radius: 50%;
-      background: var(--bg);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
-    }
-
     .logo {
-      width: 56px;
-      height: 56px;
+      width: 62px;
+      height: 62px;
       border-radius: 14px;
-      box-shadow: 0 0 0 1px rgba(255,255,255,.1);
-      position: absolute;
-      z-index: 2;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.1);
     }
 
     h1 {
@@ -166,8 +145,22 @@
   <main class="app-main">
     <div class="wrap">
       <div class="donut-wrap">
-        <div class="donut"></div>
-        <img class="logo" src="../Amaliticz_Icon.png" width="56" height="56" alt="AmaliticZ">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="38" fill="none" stroke="#1c1c1e" stroke-width="13"/>
+          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f4883a" stroke-width="13" stroke-dashoffset="0" style="--len:44"/>
+          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#7ec8e3" stroke-width="13" stroke-dashoffset="-46" style="--len:32"/>
+          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#e8566a" stroke-width="13" stroke-dashoffset="-80" style="--len:23"/>
+          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#7ed8c0" stroke-width="13" stroke-dashoffset="-105" style="--len:27"/>
+          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#4ecdc4" stroke-width="13" stroke-dashoffset="-134" style="--len:22"/>
+          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#5ab4f5" stroke-width="13" stroke-dashoffset="-158" style="--len:22"/>
+          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#c966cc" stroke-width="13" stroke-dashoffset="-182" style="--len:17"/>
+          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f4c542" stroke-width="13" stroke-dashoffset="-201" style="--len:13"/>
+          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#f48fb1" stroke-width="13" stroke-dashoffset="-216" style="--len:14"/>
+          <circle class="seg" cx="50" cy="50" r="38" fill="none" stroke="#e87a5a" stroke-width="13" stroke-dashoffset="-232" style="--len:5"/>
+        </svg>
+        <div class="donut-center">
+          <img class="logo" src="../Amaliticz_Icon.png" width="62" height="62" alt="AmaliticZ">
+        </div>
       </div>
 
       <h1>Support Ticket</h1>
