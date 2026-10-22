@@ -1,42 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>document.documentElement.classList.add("js");</script>
   <title>Support - AmaliticZ</title>
-  <meta name="robots" content="noindex, nofollow" />
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#060608">
+  <link rel="icon" href="../Amaliticz_Icon.png" type="image/png">
+  <link rel="apple-touch-icon" href="../Amaliticz_Icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/site.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #000000;
-      --surface: #1c1c1e;
-      --surface2: #2c2c2e;
-      --text: #ffffff;
-      --muted: #8e8e93;
-      --muted2: #48484a;
-      --orange: #f4883a;
-      --blue: #5ab4f5;
-      --teal: #4ecdc4;
-      --pink: #f48fb1;
-      --red: #e8566a;
-      --border: rgba(255,255,255,.08);
-      --radius: 18px;
-    }
-
-    html, body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: "Figtree", sans-serif;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 18px;
-    }
-
     .wrap {
       width: 100%;
       max-width: 420px;
@@ -45,7 +22,6 @@
       align-items: center;
     }
 
-    /* Stable donut for iOS Safari */
     .donut-wrap {
       position: relative;
       width: 170px;
@@ -94,10 +70,27 @@
       z-index: 2;
     }
 
-    h1 { font-size: 30px; font-weight: 800; text-align: center; line-height: 1.15; margin-bottom: 10px; }
-    .sub { font-size: 15px; color: var(--muted); text-align: center; line-height: 1.6; margin-bottom: 18px; }
+    h1 {
+      font-size: clamp(40px, 12vw, 52px);
+      text-align: center;
+      line-height: 0.95;
+      margin-bottom: 10px;
+    }
 
-    .card { width: 100%; background: var(--surface); border-radius: var(--radius); padding: 18px; }
+    .sub {
+      font-size: 15px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      width: 100%;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
 
     .alert {
       display: none;
@@ -128,6 +121,7 @@
       letter-spacing: .08em;
       color: var(--muted);
       margin-bottom: 6px;
+      font-family: "DM Sans", sans-serif;
     }
 
     input, select, textarea {
@@ -138,10 +132,12 @@
       border-radius: 10px;
       padding: 12px;
       font-size: 15px;
-      font-family: "Figtree", sans-serif;
-      outline: none;
     }
-    input:focus, select:focus, textarea:focus { border-color: var(--orange); }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--orange);
+      outline: 2px solid var(--orange);
+      outline-offset: 2px;
+    }
     textarea { min-height: 130px; resize: vertical; }
 
     .hint { font-size: 12px; color: var(--muted2); margin-top: 5px; }
@@ -151,91 +147,113 @@
       border: 0;
       border-radius: var(--radius);
       padding: 15px;
-      font-family: "Figtree", sans-serif;
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      transition: opacity .15s, transform .15s;
       text-align: center;
       text-decoration: none;
       display: block;
     }
     .btn-primary { background: #fff; color: #000; margin-top: 6px; }
     .btn-secondary { background: var(--surface2); color: var(--muted); margin-top: 10px; }
+    .btn-primary:visited { color: #000; }
+    .btn-secondary:visited { color: var(--muted); }
     .btn:active { transform: scale(.98); }
     .btn:disabled { opacity: .45; cursor: not-allowed; }
-
-    .footer { margin-top: 18px; font-size: 12px; color: var(--muted2); text-align: center; }
   </style>
 </head>
-<body>
-  <div class="wrap">
-    <div class="donut-wrap">
-      <div class="donut"></div>
-      <img class="logo" src="https://www.amaliticz.com/Amaliticz_Icon.png" alt="AmaliticZ" />
+<body class="app-body">
+  <main class="app-main">
+    <div class="wrap">
+      <div class="donut-wrap">
+        <div class="donut"></div>
+        <img class="logo" src="../Amaliticz_Icon.png" width="56" height="56" alt="AmaliticZ">
+      </div>
+
+      <h1>Support Ticket</h1>
+      <p class="sub">Tell us what happened and we will email you back as soon as possible.</p>
+
+      <div class="card">
+        <div id="error" class="alert alert-error"></div>
+        <div id="success" class="alert alert-success"></div>
+
+        <form id="support-form" action="https://formsubmit.co/support@amaliticz.com" method="POST">
+          <input type="hidden" name="_subject" value="AmaliticZ Support Intake">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="true">
+          <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+
+          <div class="field">
+            <label for="name">Full Name</label>
+            <input id="name" name="name" type="text" required maxlength="120">
+          </div>
+
+          <div class="field">
+            <label for="email">Reply Email</label>
+            <input id="email" name="email" type="email" required maxlength="160">
+          </div>
+
+          <div class="field">
+            <label for="category">Issue Type</label>
+            <select id="category" name="category" required>
+              <option value="">Select one...</option>
+              <option>Login / Account Access</option>
+              <option>Password Reset</option>
+              <option>Billing / Subscription</option>
+              <option>Bug / App Issue</option>
+              <option>Feature Request</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="priority">Priority</label>
+            <select id="priority" name="priority" required>
+              <option value="">Select one...</option>
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Urgent</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="message">What Happened?</label>
+            <textarea id="message" name="message" required maxlength="4000" placeholder="Describe the issue, what you expected, what happened, and any error messages."></textarea>
+            <p class="hint">Include device, iOS/Android version, and app version if possible.</p>
+          </div>
+
+          <button id="submit-btn" class="btn btn-primary" type="submit">Send to Support</button>
+        </form>
+
+        <a class="btn btn-secondary" href="https://www.amaliticz.com">Back to Website</a>
+      </div>
     </div>
+  </main>
 
-    <h1>Support Ticket</h1>
-    <p class="sub">Tell us what happened and we will email you back as soon as possible.</p>
-
-    <div class="card">
-      <div id="error" class="alert alert-error"></div>
-      <div id="success" class="alert alert-success"></div>
-
-      <form id="support-form" action="https://formsubmit.co/support@amaliticz.com" method="POST">
-        <input type="hidden" name="_subject" value="AmaliticZ Support Intake" />
-        <input type="hidden" name="_template" value="table" />
-        <input type="hidden" name="_captcha" value="true" />
-        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
-
-        <div class="field">
-          <label for="name">Full Name</label>
-          <input id="name" name="name" type="text" required maxlength="120" />
-        </div>
-
-        <div class="field">
-          <label for="email">Reply Email</label>
-          <input id="email" name="email" type="email" required maxlength="160" />
-        </div>
-
-        <div class="field">
-          <label for="category">Issue Type</label>
-          <select id="category" name="category" required>
-            <option value="">Select one...</option>
-            <option>Login / Account Access</option>
-            <option>Password Reset</option>
-            <option>Billing / Subscription</option>
-            <option>Bug / App Issue</option>
-            <option>Feature Request</option>
-            <option>Other</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="priority">Priority</label>
-          <select id="priority" name="priority" required>
-            <option value="">Select one...</option>
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-            <option>Urgent</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="message">What Happened?</label>
-          <textarea id="message" name="message" required maxlength="4000" placeholder="Describe the issue, what you expected, what happened, and any error messages."></textarea>
-          <p class="hint">Include device, iOS/Android version, and app version if possible.</p>
-        </div>
-
-        <button id="submit-btn" class="btn btn-primary" type="submit">Send to Support</button>
-      </form>
-
-      <a class="btn btn-secondary" href="https://www.amaliticz.com">Back to Website</a>
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="footer-logo" href="/">
+          <img src="../Amaliticz_Icon.png" width="30" height="30" alt="">
+          <span>AmaliticZ</span>
+        </a>
+        <p class="footer-tagline">Know where every dollar goes.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms of Use</a>
+        <a href="https://www.amaliticz.com/support">Support</a>
+      </nav>
     </div>
-
-    <p class="footer">© 2026 AmaliticZ. All rights reserved.</p>
-  </div>
+    <div class="footer-divider"></div>
+    <div class="footer-legal">
+      <p>AmaliticZ is an independent app and is not affiliated with, endorsed by, sponsored by, or in any way officially connected with Amazon.com, Inc. or any of its subsidiaries or affiliates.</p>
+      <p>Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates. All references to Amazon on this website are for descriptive purposes only and solely to indicate compatibility with Amazon order data.</p>
+      <p>Apple, the Apple logo, and App Store are trademarks of Apple Inc., registered in the U.S. and other countries. AmaliticZ is not affiliated with or endorsed by Apple Inc.</p>
+      <p class="footer-copy">&copy; 2026 AmaliticZ. All rights reserved. All other trademarks and brand names are the property of their respective owners.</p>
+    </div>
+  </footer>
 
   <script>
     const form = document.getElementById("support-form");
