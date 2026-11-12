@@ -33,11 +33,13 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      justify-content: safe center;
       text-align: center;
-      padding: 168px 24px 80px;
+      width: 100%;
+      max-width: 100%;
+      padding: 112px 24px 80px;
       position: relative;
-      overflow: hidden;
+      overflow: clip;
+      box-sizing: border-box;
     }
 
     .glow {
@@ -291,9 +293,28 @@
     }
 
     @media (max-width: 720px) {
-      .hero { padding: 188px 16px 64px; }
+      .hero { padding: 148px 16px 48px; }
       .how, .features, .categories { padding-left: 16px; padding-right: 16px; }
       #features, #how-it-works, #download { scroll-margin-top: 156px; }
+    }
+
+    @media (max-height: 760px) {
+      .hero {
+        min-height: 0;
+        padding-top: 96px;
+        padding-bottom: 32px;
+      }
+      .hero-title {
+        font-size: clamp(52px, 12vh, 112px);
+        line-height: 0.95;
+      }
+      .hero-sub { margin-top: 14px; }
+      .hero-actions { margin-top: 18px; }
+      .product-visual { margin-top: 28px; }
+    }
+
+    @media (max-height: 760px) and (max-width: 720px) {
+      .hero { padding-top: 148px; }
     }
 
     @media (max-width: 600px) {

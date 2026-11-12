@@ -146,6 +146,7 @@ a { color: var(--sky); }
   gap: 12px;
   width: 100%;
   max-width: 100%;
+  min-width: 0;
 }
 
 .store-btn {
@@ -164,9 +165,9 @@ a { color: var(--sky); }
 .store-btn:hover { transform: translateY(-2px); }
 
 .store-btn svg {
-  width: min(210px, 100%);
+  width: 210px;
+  max-width: calc(100vw - 48px);
   height: auto;
-  max-width: 100%;
   display: block;
 }
 
@@ -403,7 +404,7 @@ a { color: var(--sky); }
   .footer-top { flex-direction: column; gap: 20px; }
   .footer-links { gap: 16px; }
 
-  .store-row { flex-direction: column; }
+  .store-row { flex-direction: column; align-items: center; }
 }
 
 @media (max-width: 380px) {
