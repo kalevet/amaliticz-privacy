@@ -32,12 +32,12 @@ Leave the placeholders in git. Do not commit real Supabase keys.
 
 ## Store links
 
-App Store (live):
+App Store:
 
 `https://apps.apple.com/us/app/amaliticz-purchase-insights/id6749656484`
 
-Android placeholder. The same URL is used everywhere an Android link appears (homepage Google Play badge and `verified/index.html` `AND_URL`):
+Google Play:
 
 `https://play.google.com/store/apps/details?id=com.amaliticz.app`
 
-Change that string on each page when the Play Store listing is live.
+Both URLs are live. The homepage badges use them, and `verified/index.html` uses the same App Store URL as `IOS_URL` and the same Play URL as `AND_URL`.
