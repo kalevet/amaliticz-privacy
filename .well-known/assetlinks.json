@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.amaliticz.app",
+    "sha256_cert_fingerprints": ["C1:A8:CC:2B:E7:19:E0:EB:9A:E5:87:88:EE:D2:CD:FC:B5:83:2A:97:29:F0:9D:7F:73:54:52:37:E7:E8:AF:AC"]
+  }
+}]
