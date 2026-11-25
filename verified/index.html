@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script>document.documentElement.classList.add("js");</script>
+  <script>
+    document.documentElement.classList.add("js");
+    if (new URLSearchParams(location.search).get("token_hash")) {
+      document.documentElement.classList.add("needs-confirm");
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <title>Email Verified – AmaliticZ</title>
   <meta name="theme-color" content="#060608">
   <link rel="icon" href="../Amaliticz_Icon.png" type="image/png">
@@ -139,6 +145,16 @@
     .support a { color: var(--sky); text-decoration: none; font-weight: 500; }
     .support a:hover { text-decoration: underline; }
 
+    .status {
+      display: none;
+      font-size: 15px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    html.needs-confirm .status { display: block; }
+    html.needs-confirm #view-ready { display: none; }
+
     @media (prefers-reduced-motion: no-preference) {
       html.js .logo { animation: pop 0.55s 0.4s cubic-bezier(.34,1.56,.64,1) both; }
       html.js .donut-wrap { animation: rise 0.7s 0.1s cubic-bezier(.22,1,.36,1) both; }
@@ -181,6 +197,9 @@
       </div>
     </div>
 
+    <p id="status" class="status">Confirming your email...</p>
+
+    <div id="view-ready">
     <h1>You're verified! 🎉</h1>
     <p class="sub">Your AmaliticZ account is active and ready.<br>Head back to the app to log in.</p>
 
@@ -214,6 +233,13 @@
     <p class="support">
       Need help? <a href="https://www.amaliticz.com/support">Contact support</a>
     </p>
+    </div>
+
+    <div id="view-error" hidden>
+      <h1 id="error-title">Link unavailable</h1>
+      <p id="error-body" class="sub">This confirmation link is invalid or already used.</p>
+      <a class="cta" href="https://www.amaliticz.com/support">Contact support</a>
+    </div>
   </div>
 </main>
 
@@ -242,6 +268,17 @@
 </footer>
 
 <script>
+  var SUPABASE_URL = "__SUPABASE_URL__";
+  var SUPABASE_ANON_KEY = "__SUPABASE_ANON_KEY__";
+  var OTP_TYPES = {
+    signup: true,
+    invite: true,
+    magiclink: true,
+    recovery: true,
+    email_change: true,
+    email: true
+  };
+
   function openApp() {
     // ── CONFIGURE THESE ──────────────────────────────────────────
     var SCHEME   = "amaliticz://";          // your custom URL scheme
@@ -263,6 +300,73 @@
         else if (isAndroid) window.location.href = AND_URL;
       }
     }, 1500);
+  }
+
+  function otpType(value) {
+    return OTP_TYPES[value] ? value : "email";
+  }
+
+  function showReady() {
+    document.documentElement.classList.remove("needs-confirm");
+    document.getElementById("status").hidden = true;
+    document.getElementById("view-error").hidden = true;
+    document.getElementById("view-ready").hidden = false;
+  }
+
+  function showError(title, body) {
+    document.documentElement.classList.remove("needs-confirm");
+    document.getElementById("status").hidden = true;
+    document.getElementById("view-ready").hidden = true;
+    document.getElementById("error-title").textContent = title;
+    document.getElementById("error-body").textContent = body;
+    document.getElementById("view-error").hidden = false;
+  }
+
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise(function (_, reject) {
+        setTimeout(function () { reject(new Error("timed out")); }, ms);
+      })
+    ]);
+  }
+
+  function supabaseConfigured() {
+    return SUPABASE_URL.indexOf("supabase.co") !== -1 &&
+      SUPABASE_ANON_KEY &&
+      SUPABASE_ANON_KEY.indexOf("__") === -1;
+  }
+
+  function confirmEmail(tokenHash, type) {
+    if (typeof supabase === "undefined" || !supabase.createClient || !supabaseConfigured()) {
+      showError("Something went wrong", "Email confirmation is not available right now. Contact support and we will help.");
+      return;
+    }
+
+    var sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    withTimeout(sb.auth.verifyOtp({ token_hash: tokenHash, type: type }), 12000)
+      .then(function (result) {
+        if (result.error) {
+          var message = (result.error.message || "").toLowerCase();
+          if (message.indexOf("expired") !== -1) {
+            showError("Link expired", "This confirmation link has expired. Open the AmaliticZ app and request a new confirmation email, or contact support.");
+          } else {
+            showError("Link unavailable", "This confirmation link is invalid or already used. Open the AmaliticZ app and request a new confirmation email, or contact support.");
+          }
+          return;
+        }
+        history.replaceState(null, "", window.location.pathname);
+        showReady();
+      })
+      .catch(function () {
+        showError("Something went wrong", "Could not confirm your email right now. Try the link again, or contact support.");
+      });
+  }
+
+  var confirmParams = new URLSearchParams(window.location.search);
+  var tokenHash = confirmParams.get("token_hash");
+  if (tokenHash) {
+    confirmEmail(tokenHash, otpType(confirmParams.get("type")));
   }
 </script>
 

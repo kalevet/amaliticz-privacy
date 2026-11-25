@@ -11,7 +11,7 @@ Static site for [amaliticz.com](https://www.amaliticz.com). Plain HTML and CSS. 
 | `/terms/` | `terms/index.html` | Terms of use |
 | `/support/` | `support/index.html` | Support form (FormSubmit) |
 | `/reset-password/` | `reset-password/index.html` | Password reset (Supabase) |
-| `/verified/` | `verified/index.html` | Email-verified landing page |
+| `/verified/` | `verified/index.html` | Email confirmation (Supabase) and open-app landing page |
 
 Shared styles live in `assets/site.css`. The homepage phone frame uses `assets/app-screenshot.png` until a real app screenshot replaces it.
 
@@ -26,7 +26,7 @@ It runs on `workflow_dispatch`, and on push to `main` when any of these paths ch
 - `CNAME`
 - `.github/workflows/deploy-reset-page.yml`
 
-The job checks out the repo, injects Supabase config, and uploads the whole site. It replaces `__SUPABASE_URL__` and `__SUPABASE_ANON_KEY__` in both `index.html` and `reset-password/index.html` using the Actions secrets `SUPABASE_URL` and `SUPABASE_ANON_KEY`. The deploy fails if either placeholder is still present in those two files.
+The job checks out the repo, injects Supabase config, and uploads the whole site. It replaces `__SUPABASE_URL__` and `__SUPABASE_ANON_KEY__` in `index.html`, `reset-password/index.html`, and `verified/index.html` using the Actions secrets `SUPABASE_URL` and `SUPABASE_ANON_KEY`. The deploy fails if either placeholder is still present in those files.
 
 Leave the placeholders in git. Do not commit real Supabase keys.
 

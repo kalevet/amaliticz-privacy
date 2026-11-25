@@ -37,10 +37,12 @@ jobs:
           sed -i "s|__SUPABASE_ANON_KEY__|${{ secrets.SUPABASE_ANON_KEY }}|g" index.html
           sed -i "s|__SUPABASE_URL__|${{ secrets.SUPABASE_URL }}|g" reset-password/index.html
           sed -i "s|__SUPABASE_ANON_KEY__|${{ secrets.SUPABASE_ANON_KEY }}|g" reset-password/index.html
+          sed -i "s|__SUPABASE_URL__|${{ secrets.SUPABASE_URL }}|g" verified/index.html
+          sed -i "s|__SUPABASE_ANON_KEY__|${{ secrets.SUPABASE_ANON_KEY }}|g" verified/index.html
 
       - name: Verify placeholders replaced
         run: |
-          if grep -R "__SUPABASE_URL__\\|__SUPABASE_ANON_KEY__" index.html reset-password/index.html; then
+          if grep -R "__SUPABASE_URL__\\|__SUPABASE_ANON_KEY__" index.html reset-password/index.html verified/index.html; then
             echo "Placeholders still found after injection"
             exit 1
           fi
